@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#faf8ff">
+<title>Pathophysiology — Progress Check</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root {
+  color-scheme: light only;
+  --bg: #f5f7ff;
+  --surface: #eaecff;
+  --card: #ffffff;
+  --border: #cdd2f5;
+  --border2: #adb5ee;
+  --accent: #3a56d4;
+  --accent2: #c44faa;
+  --accent-soft: rgba(58,86,212,.10);
+  --green: #2a7d6e;
+  --green-dim: rgba(42,125,110,.10);
+  --red: #c0392b;
+  --red-dim: rgba(192,57,43,.09);
+  --yellow: #b07d2a;
+  --yellow-dim: rgba(176,125,42,.10);
+  --pink: #c44faa;
+  --pink-dim: rgba(196,79,170,.10);
+  --text: #1a1e3a;
+  --text2: #4a5080;
+  --text3: #8a90be;
+  --radius: 16px;
+  --shadow: 0 2px 20px rgba(58,86,212,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{background:#f5f7ff !important;}
+body{background:#f5f7ff !important;color:#1a1e3a !important;color-scheme:light;font-family:'DM Sans',sans-serif;min-height:100vh;padding:0 16px 80px;}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 10% 0%,rgba(58,86,212,.07) 0%,transparent 55%),radial-gradient(ellipse at 90% 100%,rgba(196,79,170,.06) 0%,transparent 55%);pointer-events:none;z-index:0;}
+.hdr{max-width:800px;margin:0 auto;padding:40px 0 28px;border-bottom:1px solid var(--border);margin-bottom:28px;text-align:center;position:relative;z-index:1;}
+.hdr-icon{font-size:32px;margin-bottom:10px;display:block;}
+.hdr-title{font-size:clamp(22px,5vw,32px);font-weight:800;letter-spacing:-.02em;}
+.hdr-title span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.tabs{max-width:800px;margin:0 auto 24px;display:flex;gap:5px;background:#eaecff !important;border:1px solid var(--border);border-radius:14px;padding:5px;position:relative;z-index:1;}
+.tab-btn{flex:1;padding:10px 14px;border-radius:10px;border:none;background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .25s;}
+.tab-btn.active{background:#ffffff !important;color:var(--accent);box-shadow:0 2px 12px rgba(58,86,212,.12);}
+.panel{max-width:800px;margin:0 auto;display:none;position:relative;z-index:1;}
+.panel.active{display:block;}
+.card{background:#ffffff !important;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 26px;margin-bottom:16px;}
+.card-label{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
+input[type=text],input[type=password],input[type=number]{background:#eaecff !important;border:1.5px solid var(--border);border-radius:12px;color:#1a1e3a !important;font-family:'DM Sans',sans-serif;font-size:15px;padding:12px 16px;outline:none;width:100%;transition:border-color .2s,box-shadow .2s;}
+input[type=text].mono,input[type=password].mono{font-family:'DM Mono',monospace;font-size:15px;letter-spacing:.04em;}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(58,86,212,.12);}
+input::placeholder{color:var(--text3);font-size:13px;}
+select{background:#eaecff !important;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:5px 8px;outline:none;}
+.btn{border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;padding:10px 20px;transition:all .2s;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 2px 10px rgba(58,86,212,.25);}
+.btn-primary:hover{opacity:.92;transform:translateY(-1px);}
+.btn-ghost{background:#eaecff !important;color:var(--text2);border:1px solid var(--border);}
+.btn-ghost:hover{color:var(--accent);border-color:var(--accent);}
+.btn-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(42,125,110,.2);}
+.btn-green:hover{background:rgba(42,125,110,.18);}
+.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid rgba(192,57,43,.18);}
+.btn-sm{padding:6px 13px;font-size:12px;border-radius:8px;}
+.row{display:flex;gap:10px;}
+.msg{border-radius:10px;padding:12px 16px;font-size:13px;font-weight:600;margin-top:12px;}
+.msg-err{background:var(--red-dim);color:var(--red);border:1px solid rgba(192,57,43,.2);animation:shake .25s;}
+.msg-ok{background:var(--green-dim);color:var(--green);border:1px solid rgba(42,125,110,.2);animation:pop .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}30%{transform:translateX(-5px)}70%{transform:translateX(5px)}}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.result-wrap{animation:pop .35s cubic-bezier(.4,0,.2,1);}
+.result-head{background:linear-gradient(135deg,#2a3fa0,#c44faa);border-radius:var(--radius) var(--radius) 0 0;padding:24px 28px 20px;}
+.result-name{font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;}
+.result-meta{font-size:11px;color:rgba(255,255,255,.6);font-family:'DM Mono',monospace;}
+.result-body{background:#ffffff !important;border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:24px 26px;}
+.period-nav{display:flex;gap:4px;margin-bottom:20px;background:#eaecff !important;border-radius:12px;padding:4px;}
+.period-nav-btn{flex:1;padding:9px 10px;border:none;border-radius:9px;background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;}
+.period-nav-btn.active{background:#ffffff !important;color:var(--text);box-shadow:0 2px 8px rgba(58,86,212,.12);}
+.period-nav-btn.has-data::after{content:'●';font-size:6px;margin-left:4px;vertical-align:middle;color:var(--accent);}
+.period-nav-btn.pending::after{content:'○';font-size:6px;margin-left:4px;vertical-align:middle;color:var(--text3);}
+.period-nav-btn.final-tab{background:rgba(58,86,212,.08);color:var(--accent);font-weight:700;}
+.period-nav-btn.final-tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+.period-panel{display:none;}
+.period-panel.active{display:block;}
+.breakdown-card{border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;}
+.bk-header{display:flex;justify-content:space-between;align-items:center;padding:11px 18px;border-bottom:1px solid var(--border);}
+.bk-title{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;}
+.bk-pct{font-size:11px;font-weight:700;font-family:'DM Mono',monospace;padding:3px 10px;border-radius:20px;}
+.bk-body{padding:16px 18px;}
+.bk-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:12px;}
+.score-item{background:#eaecff !important;border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+.score-item-label{font-size:10px;color:var(--text3);margin-bottom:5px;font-weight:600;}
+.score-item-val{font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:var(--text);}
+.score-item-max{font-size:10px;color:var(--text3);margin-left:2px;}
+.bk-subtotal{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-radius:10px;margin-top:4px;}
+.bk-subtotal-label{font-size:12px;font-weight:700;color:var(--text2);}
+.bk-subtotal-val{font-family:'DM Mono',monospace;font-size:17px;font-weight:800;}
+.bk-cs .bk-header{background:rgba(58,86,212,.06);}
+.bk-cs .bk-title{color:var(--accent);}
+.bk-cs .bk-pct{background:var(--accent-soft);color:var(--accent);}
+.bk-cs .bk-subtotal{background:var(--accent-soft);}
+.bk-cs .bk-subtotal-val{color:var(--accent);}
+.bk-pt .bk-header{background:rgba(196,79,170,.06);}
+.bk-pt .bk-title{color:var(--pink);}
+.bk-pt .bk-pct{background:var(--pink-dim);color:var(--pink);}
+.bk-pt .bk-subtotal{background:var(--pink-dim);}
+.bk-pt .bk-subtotal-val{color:var(--pink);}
+.period-result{background:linear-gradient(135deg,rgba(58,86,212,.07),rgba(196,79,170,.05));border:1px solid rgba(58,86,212,.18);border-radius:14px;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.period-result-label{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:5px;}
+.period-result-val{font-family:'DM Mono',monospace;font-size:30px;font-weight:700;color:var(--accent);}
+.period-formula{font-size:11px;color:var(--text3);font-style:italic;line-height:1.6;}
+.final-banner{border-radius:14px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-top:4px;}
+.final-passed{background:linear-gradient(135deg,rgba(42,125,110,.10),rgba(42,125,110,.06));border:1.5px solid rgba(42,125,110,.25);}
+.final-failed{background:linear-gradient(135deg,rgba(192,57,43,.10),rgba(192,57,43,.06));border:1.5px solid rgba(192,57,43,.22);}
+.final-label{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:5px;}
+.final-val{font-family:'DM Mono',monospace;font-size:34px;font-weight:800;}
+.final-passed .final-val{color:var(--green);}
+.final-failed .final-val{color:var(--red);}
+.final-pill{font-size:14px;font-weight:800;padding:9px 20px;border-radius:24px;}
+.final-passed .final-pill{background:rgba(42,125,110,.15);color:var(--green);}
+.final-failed .final-pill{background:rgba(192,57,43,.12);color:var(--red);}
+.pending-state{text-align:center;padding:36px 20px;color:var(--text3);}
+.pending-state .big-icon{font-size:36px;margin-bottom:10px;}
+.t-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px;}
+.admin-tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);padding:10px;text-align:left;border-bottom:1px solid var(--border);background:#eaecff !important;white-space:nowrap;}
+thead th.group-cs{border-top:3px solid var(--accent);color:var(--accent);}
+thead th.group-pt{border-top:3px solid var(--pink);color:var(--pink);}
+thead th.group-calc{border-top:3px solid var(--accent2);color:var(--accent2);}
+tbody td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:rgba(58,86,212,.03);}
+tbody td input[type=number]{background:#eaecff !important;border:1px solid var(--border);border-radius:6px;color:#1a1e3a;font-family:'DM Mono',monospace;font-size:11px;padding:4px 7px;width:60px;outline:none;}
+tbody td input[type=number]:focus{border-color:var(--accent);}
+.name-cell{font-weight:700;font-size:12px;min-width:150px;}
+.calc-cell{font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);}
+.id-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.id-tbl th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);background:#eaecff !important;}
+.id-tbl td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.id-tbl tr:last-child td{border-bottom:none;}
+.id-tbl tr:hover td{background:rgba(58,86,212,.03);}
+.id-tbl td input[type=text]{font-family:'DM Mono',monospace;font-size:12px;padding:5px 9px;border-radius:8px;width:140px;background:#eaecff !important;border:1px solid var(--border);color:#1a1e3a !important;}
+.id-set{border-color:rgba(42,125,110,.5)!important;color:var(--green)!important;}
+.sec-1c{background:rgba(58,86,212,.12);color:var(--accent);font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;}
+.sec-1d{background:rgba(196,79,170,.12);color:var(--pink);font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;}
+.info-box{background:rgba(58,86,212,.06);border:1px solid rgba(58,86,212,.14);border-radius:10px;padding:13px 16px;font-size:13px;color:var(--accent);margin-bottom:16px;line-height:1.65;}
+.tools-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;}
+.save-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center;}
+hr.dv{border:none;border-top:1px solid var(--border);margin:18px 0;}
+.cid-tab{background:transparent;color:var(--text2);border:none;font-weight:700;}
+.cid-tab.active{background:#ffffff !important;color:var(--text);box-shadow:0 1px 6px rgba(58,86,212,.10);}
+.share-code{font-family:'DM Mono',monospace;font-weight:700;font-size:13px;color:var(--accent);}
+.share-no-code{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);}
+.share-row{display:grid;grid-template-columns:1fr 1.2fr;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);align-items:center;font-size:13px;}
+.share-row:last-child{border-bottom:none;}
+.share-row:hover{background:rgba(58,86,212,.03);}
+#drop-zone{position:relative;border:2.5px dashed var(--border2);border-radius:16px;padding:44px 24px;text-align:center;background:#eaecff !important;transition:all .25s;cursor:pointer;}
+#drop-zone:hover,#drop-zone.dz-over{border-color:var(--accent);background:rgba(58,86,212,.05);}
+.dz-icon{font-size:44px;margin-bottom:12px;}
+.dz-title{font-size:16px;font-weight:800;color:var(--text);margin-bottom:5px;}
+.dz-sub{font-size:13px;color:var(--text3);}
+.upload-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:12px;margin-bottom:8px;border:1px solid var(--border);}
+.upload-item.ok{background:var(--green-dim);border-color:rgba(42,125,110,.18);}
+.upload-item.err{background:var(--red-dim);border-color:rgba(192,57,43,.18);}
+.upload-item.warn{background:var(--yellow-dim);border-color:rgba(176,125,42,.18);}
+.upload-icon{font-size:20px;flex-shrink:0;}
+.upload-detail{flex:1;}
+.upload-filename{font-weight:700;font-size:13px;margin-bottom:3px;}
+.upload-item.ok .upload-filename{color:var(--green);}
+.upload-item.err .upload-filename{color:var(--red);}
+.upload-stats{font-size:12px;color:var(--text2);}
+@media(max-width:500px){
+  .card,.result-body{padding:16px;}
+  .result-head{padding:18px 16px 14px;}
+  .bk-items{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <span class="hdr-icon">🧬</span>
+  <div class="hdr-title"><span>Pathophysiology</span></div>
+</div>
+
+<div class="tabs" style="max-width:800px;margin:0 auto 24px;">
+  <button class="tab-btn active" onclick="switchTab('student')" style="flex:1;">PathoCheck</button>
+  <button class="tab-btn" onclick="switchTab('teacher')" style="flex:none;padding:10px 16px;font-size:11px;opacity:.4;" title="Teacher Access">🔒</button>
+</div>
+
+<!-- STUDENT PANEL -->
+<div id="panel-student" class="panel active">
+  <div class="card">
+    <div class="row">
+      <input type="text" id="stu-id" class="mono" placeholder="Enter your Private Code…" autocomplete="off" onkeydown="if(event.key==='Enter')stuLookup()">
+      <button class="btn btn-primary" onclick="stuLookup()">Check →</button>
+    </div>
+    <div id="stu-err"></div>
+  </div>
+  <div id="stu-result"></div>
+  <div style="text-align:center;padding:28px 16px 0;font-size:13px;color:var(--text3);font-style:italic;">"May your cells be healthy and your grades even healthier."</div>
+</div>
+
+<!-- TEACHER PANEL -->
+<div id="panel-teacher" class="panel">
+  <div id="t-login" class="card">
+    <div class="card-label">Teacher Access</div>
+    <div class="row">
+      <input type="password" id="t-pass" class="mono" placeholder="Password…" onkeydown="if(event.key==='Enter')tLogin()">
+      <button class="btn btn-primary" onclick="tLogin()">Unlock</button>
+    </div>
+    <div id="t-login-err"></div>
+  </div>
+
+  <div id="t-content" style="display:none;">
+    <div class="card" style="padding:14px 18px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div style="font-weight:700;font-size:14px;color:var(--accent);">🧬 Patho Grade Panel</div>
+        <div class="t-nav">
+          <button class="btn btn-ghost btn-sm" onclick="tShow('upload')">📤 Upload Gradesheet</button>
+          <button class="btn btn-ghost btn-sm" onclick="tShow('ids')">📋 Student IDs</button>
+          <button class="btn btn-ghost btn-sm" onclick="tShow('customids')">🔑 Lookup Codes</button>
+          <button class="btn btn-ghost btn-sm" onclick="tShow('grades')">✏️ Edit Grades</button>
+          <button class="btn btn-ghost btn-sm" onclick="tShow('pass')">🔒 Password</button>
+          <button class="btn btn-green btn-sm" onclick="downloadUpdatedFile()">⬇️ Download Updated File</button>
+          <button class="btn btn-danger btn-sm" onclick="tLogout()">Exit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload -->
+    <div id="t-upload" class="card">
+      <div class="card-label">Upload Gradesheet</div>
+      <div class="info-box">📂 Upload your <strong>.xlsx or .xlsm</strong> gradesheet. The app will read midterm and finals scores automatically.</div>
+      <div id="drop-zone" ondragover="event.preventDefault();this.classList.add('dz-over')" ondragleave="this.classList.remove('dz-over')" ondrop="handleDrop(event)">
+        <div class="dz-icon">📋</div>
+        <div class="dz-title">Drag &amp; drop gradesheet here</div>
+        <div class="dz-sub">or click to browse</div>
+        <input type="file" accept=".xlsx,.xlsm,.xls" multiple onchange="handleFiles(this.files)" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+      </div>
+      <div style="margin-top:12px;">
+        <label class="btn btn-primary" style="cursor:pointer;display:inline-block;">📁 Browse Files<input type="file" accept=".xlsx,.xlsm,.xls" multiple onchange="handleFiles(this.files)" style="display:none;"></label>
+      </div>
+      <div id="upload-log" style="display:none;margin-top:18px;"><div id="upload-log-items"></div></div>
+    </div>
+
+    <!-- Student IDs -->
+    <div id="t-ids" class="card" style="display:none;">
+      <div class="card-label">Student Reference</div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">Student initials with Lookup Codes. 1C = purple, 1D = teal.</p>
+      <input type="text" id="ids-search" placeholder="Search…" oninput="renderIdList()" style="margin-bottom:12px;">
+      <div style="overflow-x:auto;border:1px solid var(--border);border-radius:10px;">
+        <table class="id-tbl"><thead><tr><th>#</th><th>Name</th><th>Sec</th><th>Lookup Code</th></tr></thead><tbody id="ids-body"></tbody></table>
+      </div>
+    </div>
+
+    <!-- Lookup Codes -->
+    <div id="t-customids" class="card" style="display:none;">
+      <div class="card-label">Manage Lookup Codes</div>
+      <div style="display:flex;gap:4px;background:#f0ecff;border-radius:9px;padding:4px;margin-bottom:18px;">
+        <button class="btn btn-sm cid-tab active" id="cidtab-edit" onclick="showCidTab('edit')">✏️ Assign Codes</button>
+        <button class="btn btn-sm cid-tab" id="cidtab-share" onclick="showCidTab('share')">📋 Copy &amp; Share</button>
+      </div>
+      <div id="cidpanel-edit">
+        <div class="tools-row">
+          <input type="text" id="cid-search" placeholder="Search…" oninput="renderCidTable()" style="max-width:200px;">
+          <button class="btn btn-green btn-sm" onclick="genAllRandom()">🎲 Random All</button>
+          <button class="btn btn-primary btn-sm" onclick="saveCids()">💾 Save Codes</button>
+        </div>
+        <div style="overflow-x:auto;border:1px solid var(--border);border-radius:10px;">
+          <table class="id-tbl"><thead><tr><th>#</th><th>Name</th><th>Sec</th><th>Lookup Code</th><th></th></tr></thead><tbody id="cid-body"></tbody></table>
+        </div>
+        <div id="cid-msg"></div>
+      </div>
+      <div id="cidpanel-share" style="display:none;">
+        <div class="tools-row">
+          <select id="share-section-filter" onchange="renderShareList()" style="padding:8px 12px;border-radius:8px;font-size:13px;">
+            <option value="all">All</option>
+            <option value="1C">Group C</option>
+            <option value="1D">Group D</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="copyTextArea()">📋 Copy List</button>
+          <button class="btn btn-green btn-sm" onclick="downloadCodesExcel()">⬇️ Download Excel</button>
+          <button class="btn btn-ghost btn-sm" onclick="printShareList()">🖨️ Print</button>
+        </div>
+        <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+          <div style="background:#f0ecff;padding:10px 16px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);display:grid;grid-template-columns:1fr 1.2fr;gap:12px;"><span>Name</span><span>Lookup Code</span></div>
+          <div id="share-list-body" style="max-height:400px;overflow-y:auto;"></div>
+        </div>
+        <div style="margin-top:12px;padding:12px 16px;background:#f0ecff;border-radius:9px;border:1px solid var(--border);">
+          <div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase;">Plain Text</div>
+          <textarea id="share-text-area" readonly style="width:100%;min-height:120px;background:#fff;border:1px solid var(--border);border-radius:7px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);resize:vertical;outline:none;line-height:1.7;"></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="btn btn-primary btn-sm" onclick="copyTextArea()">📋 Copy</button>
+            <span id="copy-confirm" style="font-size:12px;color:var(--green);align-self:center;display:none;">✓ Copied!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Grades -->
+    <div id="t-grades" class="card" style="display:none;">
+      <div class="card-label">Edit Student Grades</div>
+      <div class="info-box" style="font-size:12px;"><strong style="color:var(--accent);">Purple</strong> = Class Standing (60%) &nbsp;|&nbsp; <strong style="color:var(--teal);">Teal</strong> = Periodic Test (40%)</div>
+      <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" id="gbtn-midterm" onclick="setGradePeriod('midterm')">Midterm</button>
+        <button class="btn btn-ghost btn-sm" id="gbtn-finals" onclick="setGradePeriod('finals')">Finals</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
+        <input type="text" id="grade-search" placeholder="Search by name…" oninput="renderGradeTable()" style="max-width:220px;margin-bottom:0;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;">
+          <input type="checkbox" id="filter-missing" onchange="renderGradeTable()" style="width:auto;accent-color:var(--accent);">
+          <span>Show only missing data</span>
+        </label>
+      </div>
+      <div class="admin-tbl-wrap" id="grade-tbl-wrap"></div>
+      <div class="save-row">
+        <button class="btn btn-primary" onclick="saveGrades()">💾 Save All Changes</button>
+        <button class="btn btn-ghost" onclick="renderGradeTable()">🔄 Refresh</button>
+        <span style="font-size:12px;color:var(--text3);" id="rec-count"></span>
+      </div>
+      <div id="grade-msg"></div>
+    </div>
+
+    <!-- Password -->
+    <div id="t-pass-section" class="card" style="display:none;">
+      <div class="card-label">Change Password</div>
+      <div class="row" style="max-width:380px;">
+        <input type="password" id="new-pass" placeholder="New password…" class="mono">
+        <button class="btn btn-primary" onclick="changePass()">Update</button>
+      </div>
+      <div id="pass-msg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// PATHO GRADE SCHEMA
+// Midterm & Finals:
+//   CS (60%): Quizzes, Long Quiz, Lecturio/Activities
+//   PT (40%): Major Exam
+// ═══════════════════════════════════════════════
+
+const STORAGE_KEY = 'patho_v6';
+const DEFAULT_PASS = 'Wd#7mQpL@39Xv!';
+
+const COMPONENTS = {
+  midterm: {
+    cs: { label:'Class Standing', pct:60, groups:[
+      { label:'DLT Quizzes', pct:10, items:[
+        {key:'dlt_obesity',label:'DLT Obesity etc',max:15},
+        {key:'dlt_cellular',label:'DLT Cellular Injury',max:15},
+        {key:'dlt_anemia',label:'DLT Anemia & Neuro',max:15},
+        {key:'dlt_respi',label:'DLT Respi',max:15}
+      ]},
+      { label:'JM Quizzes', pct:10, items:[
+        {key:'jm1',label:'JM 1',max:20},{key:'jm2',label:'JM 2',max:20},
+        {key:'jm3',label:'JM 3',max:20},{key:'jm4',label:'JM 4',max:20}
+      ]},
+      { label:'Participation / Lecturio', pct:10, items:[
+        {key:'part_dlt',label:'DLT Participation',max:10},
+        {key:'lec_dlt',label:'DLT Lecturio',max:30},
+        {key:'lec_jm1',label:'JM Lecturio 1',max:152},
+        {key:'lec_jm2',label:'JM Lecturio 2',max:147},
+        {key:'lec_jm3',label:'JM Lecturio 3',max:151}
+      ]},
+      { label:'Long Test', pct:30, items:[
+        {key:'lt',label:'Long Test',max:60}
+      ]}
+    ]},
+    pt:{ label:'Major Exam', pct:40, items:[{key:'major',label:'Major Exam',max:80}] }
+  },
+  finals: {
+    cs:{ label:'Class Standing', pct:60, groups:[
+      { label:'JM Quizzes', pct:10, items:[
+        {key:'fjm1',label:'JM 1',max:20},{key:'fjm2',label:'JM 2',max:20},
+        {key:'fjm3',label:'JM 3',max:20},{key:'fjm4',label:'JM 4',max:20}
+      ]},
+      { label:'DLT Quizzes', pct:10, items:[
+        {key:'fdlt1',label:'DLT 1',max:25},
+        {key:'fdlt2',label:'DLT 2',max:15},
+        {key:'fdlt3',label:'DLT 3',max:15}
+      ]},
+      { label:'Lecturio / Assignment', pct:20, items:[
+        {key:'lec_jml1',label:'JM Lec 1',max:91},
+        {key:'lec_jml2',label:'JM Lec 2',max:137},
+        {key:'lec_jml34',label:'JM Lec 3&4',max:151},
+        {key:'lec_dlt1',label:'DLT Lec 1',max:87},
+        {key:'lec_dlt2',label:'DLT Lec 2',max:86},
+        {key:'lec_textbook',label:'Textbook Discussion',max:100}
+      ]},
+      { label:'Long Test', pct:20, items:[
+        {key:'lt',label:'Long Test',max:50}
+      ]}
+    ]},
+    pt:{ label:'Major Exam', pct:40, items:[{key:'major',label:'Major Exam',max:70}] }
+  }
+};
+
+const INITIAL = [{"id":"202530376","name":"MAGO, Ma. Erica J'Sha A.","section":"1C","custom_id":"67hRSAAy","scores":{"midterm":{"dlt_obesity":13.0,"dlt_cellular":8.0,"dlt_anemia":10.0,"dlt_respi":9.0,"jm1":11.0,"jm2":7.0,"jm3":10.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":39.0,"mg_cs":84.08,"major":73.0,"mg_pt":95.63,"mg_avg":88.7,"final_rating":89.94,"action":"Passed"},"finals":{"fjm1":15.0,"fjm2":14.0,"fjm3":13.0,"fjm4":14.0,"fdlt1":23.0,"fdlt2":11.0,"fdlt3":9.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":85.0,"lec_dlt2":82.0,"lec_textbook":97.0,"lt":39.0,"fg_cs":91.48,"major":57.0,"fg_pt":90.71,"fg_avg":91.18}}},{"id":"202530139","name":"MAGRARE, Anela Marie E.","section":"1C","custom_id":"3Q7sFuD2","scores":{"midterm":{"dlt_obesity":10.0,"dlt_cellular":8.0,"dlt_anemia":9.0,"dlt_respi":14.0,"jm1":9.0,"jm2":8.0,"jm3":12.0,"jm4":10.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":42.0,"mg_cs":85.78,"major":71.0,"mg_pt":94.38,"mg_avg":89.22,"final_rating":89.35,"action":"Passed"},"finals":{"fjm1":19.0,"fjm2":13.0,"fjm3":13.0,"fjm4":13.0,"fdlt1":20.0,"fdlt2":14.0,"fdlt3":11.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":82.0,"lec_dlt2":82.0,"lec_textbook":89.0,"lt":39.0,"fg_cs":91.97,"major":50.0,"fg_pt":85.71,"fg_avg":89.47}}},{"id":"438501150752","name":"MAGTUPA, Janeil Alrose B.","section":"1C","custom_id":"J6u2fXpx","scores":{"midterm":{"dlt_obesity":10.0,"dlt_cellular":10.0,"dlt_anemia":9.0,"dlt_respi":8.0,"jm1":4.0,"jm2":10.0,"jm3":11.0,"jm4":10.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":141.0,"lec_jm2":130.0,"lec_jm3":84.0,"lt":49.0,"mg_cs":86.86,"major":61.0,"mg_pt":88.13,"mg_avg":87.36,"final_rating":86.27,"action":"Passed"},"finals":{"fjm1":10.0,"fjm2":11.0,"fjm3":10.0,"fjm4":10.0,"fdlt1":17.0,"fdlt2":12.0,"fdlt3":13.0,"lec_jml1":80.0,"lec_jml2":123.0,"lec_jml34":null,"lec_dlt1":50.0,"lec_dlt2":75.0,"lec_textbook":null,"lt":41.0,"fg_cs":81.47,"major":57.0,"fg_pt":90.71,"fg_avg":85.17}}},{"id":"202530829","name":"MAJAROCON, Hinrich T.","section":"1C","custom_id":"ccRjX2DC","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":1.0,"dlt_anemia":9.0,"dlt_respi":7.0,"jm1":1.0,"jm2":2.0,"jm3":3.0,"jm4":4.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":89.0,"lec_jm3":133.0,"lt":42.0,"mg_cs":81.8,"major":62.0,"mg_pt":88.75,"mg_avg":84.58,"final_rating":82.33,"action":"Passed"},"finals":{"fjm1":7.0,"fjm2":4.0,"fjm3":4.0,"fjm4":3.0,"fdlt1":9.0,"fdlt2":10.0,"fdlt3":2.0,"lec_jml1":77.0,"lec_jml2":118.0,"lec_jml34":112.0,"lec_dlt1":77.0,"lec_dlt2":67.0,"lec_textbook":100.0,"lt":33.0,"fg_cs":82.52,"major":37.0,"fg_pt":76.43,"fg_avg":80.08}}},{"id":"202530412","name":"MALUTAO, Jen Ashley I.","section":"1C","custom_id":"dwZukG5P","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":4.0,"dlt_anemia":3.0,"dlt_respi":7.0,"jm1":12.0,"jm2":4.0,"jm3":10.0,"jm4":6.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":146.0,"lec_jm3":151.0,"lt":45.0,"mg_cs":84.64,"major":67.0,"mg_pt":91.88,"mg_avg":87.53,"final_rating":87.68,"action":"Passed"},"finals":{"fjm1":13.0,"fjm2":15.0,"fjm3":8.0,"fjm4":9.0,"fdlt1":18.0,"fdlt2":13.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":84.0,"lec_dlt2":77.0,"lec_textbook":87.0,"lt":38.0,"fg_cs":89.72,"major":49.0,"fg_pt":85.0,"fg_avg":87.83}}},{"id":"202531112","name":"MANGADSIL, Ella Jade Carleen S.","section":"1C","custom_id":"N3KKkneP","scores":{"midterm":{"dlt_obesity":2.0,"dlt_cellular":1.0,"dlt_anemia":6.0,"dlt_respi":2.0,"jm1":2.0,"jm2":5.0,"jm3":1.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":116.0,"lec_jm2":100.0,"lec_jm3":110.0,"lt":36.0,"mg_cs":78.11,"major":62.0,"mg_pt":88.75,"mg_avg":82.36,"final_rating":81.66,"action":"Passed"},"finals":{"fjm1":5.0,"fjm2":7.0,"fjm3":3.0,"fjm4":2.0,"fdlt1":12.0,"fdlt2":8.0,"fdlt3":5.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":126.0,"lec_dlt1":84.0,"lec_dlt2":63.0,"lec_textbook":78.0,"lt":33.0,"fg_cs":83.02,"major":39.0,"fg_pt":77.86,"fg_avg":80.95}}},{"id":"202531001","name":"MARMETO, San Crystel Mae C.","section":"1C","custom_id":"9JXZ99Hr","scores":{"midterm":{"dlt_obesity":5.0,"dlt_cellular":3.0,"dlt_anemia":7.0,"dlt_respi":3.0,"jm1":9.0,"jm2":5.0,"jm3":9.0,"jm4":3.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":38.0,"mg_cs":81.25,"major":62.0,"mg_pt":88.75,"mg_avg":84.25,"final_rating":84.73,"action":"Passed"},"finals":{"fjm1":11.0,"fjm2":9.0,"fjm3":6.0,"fjm4":9.0,"fdlt1":20.0,"fdlt2":12.0,"fdlt3":6.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":83.0,"lec_dlt2":69.0,"lec_textbook":89.0,"lt":34.0,"fg_cs":86.76,"major":46.0,"fg_pt":82.86,"fg_avg":85.2}}},{"id":"202530322","name":"MARQUEZ, Aira Nicole A.","section":"1C","custom_id":"L75vEXsm","scores":{"midterm":{"dlt_obesity":5.0,"dlt_cellular":5.0,"dlt_anemia":6.0,"dlt_respi":3.0,"jm1":2.0,"jm2":1.0,"jm3":5.0,"jm4":6.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":136.0,"lec_jm2":129.0,"lec_jm3":32.0,"lt":43.0,"mg_cs":81.48,"major":63.0,"mg_pt":89.38,"mg_avg":84.64,"final_rating":82.27,"action":"Passed"},"finals":{"fjm1":10.0,"fjm2":2.0,"fjm3":9.0,"fjm4":6.0,"fdlt1":17.0,"fdlt2":5.0,"fdlt3":9.0,"lec_jml1":91.0,"lec_jml2":80.0,"lec_jml34":133.0,"lec_dlt1":33.0,"lec_dlt2":45.0,"lec_textbook":94.0,"lt":39.0,"fg_cs":83.55,"major":33.0,"fg_pt":74.43,"fg_avg":79.9}}},{"id":"202530629","name":"MASANIT, Joshua A.","section":"1C","custom_id":"Jy4RFYZ9","scores":{"midterm":{"dlt_obesity":11.0,"dlt_cellular":6.0,"dlt_anemia":4.0,"dlt_respi":8.0,"jm1":5.0,"jm2":5.0,"jm3":7.0,"jm4":3.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":39.0,"mg_cs":82.36,"major":68.0,"mg_pt":92.5,"mg_avg":86.42,"final_rating":87.22,"action":"Passed"},"finals":{"fjm1":13.0,"fjm2":10.0,"fjm3":8.0,"fjm4":8.0,"fdlt1":14.0,"fdlt2":11.0,"fdlt3":6.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":82.0,"lec_dlt2":77.0,"lec_textbook":97.0,"lt":37.0,"fg_cs":87.65,"major":54.0,"fg_pt":88.57,"fg_avg":88.02}}},{"id":"202531054","name":"MINASALVAS, Khreeztel Czarmagne F.","section":"1C","custom_id":"tJHfYwqV","scores":{"midterm":{"dlt_obesity":5.0,"dlt_cellular":5.0,"dlt_anemia":9.0,"dlt_respi":7.0,"jm1":4.0,"jm2":9.0,"jm3":9.0,"jm4":8.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":49.0,"mg_cs":86.57,"major":69.0,"mg_pt":93.13,"mg_avg":89.19,"final_rating":89.67,"action":"Passed"},"finals":{"fjm1":11.0,"fjm2":16.0,"fjm3":9.0,"fjm4":8.0,"fdlt1":11.0,"fdlt2":13.0,"fdlt3":7.0,"lec_jml1":90.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":84.0,"lec_dlt2":77.0,"lec_textbook":93.0,"lt":43.0,"fg_cs":90.24,"major":56.0,"fg_pt":90.0,"fg_avg":90.14}}},{"id":"202530113","name":"MONEDERA, Andrea R.","section":"1C","custom_id":"FY42vjJB","scores":{"midterm":{"dlt_obesity":9.0,"dlt_cellular":10.0,"dlt_anemia":9.0,"dlt_respi":9.0,"jm1":16.0,"jm2":9.0,"jm3":11.0,"jm4":11.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":150.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":39.0,"mg_cs":84.66,"major":76.0,"mg_pt":97.5,"mg_avg":89.8,"final_rating":90.85,"action":"Passed"},"finals":{"fjm1":14.0,"fjm2":19.0,"fjm3":13.0,"fjm4":14.0,"fdlt1":23.0,"fdlt2":14.0,"fdlt3":14.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":150.0,"lec_dlt1":85.0,"lec_dlt2":81.0,"lec_textbook":96.0,"lt":40.0,"fg_cs":93.64,"major":55.0,"fg_pt":89.29,"fg_avg":91.9}}},{"id":"202530469","name":"MORENO, Gerica Mae N.","section":"1C","custom_id":"ENk7v9SS","scores":{"midterm":{"dlt_obesity":4.0,"dlt_cellular":6.0,"dlt_anemia":6.0,"dlt_respi":5.0,"jm1":9.0,"jm2":9.0,"jm3":6.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":151.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":43.0,"mg_cs":83.61,"major":62.0,"mg_pt":88.75,"mg_avg":85.67,"final_rating":86.19,"action":"Passed"},"finals":{"fjm1":11.0,"fjm2":11.0,"fjm3":4.0,"fjm4":16.0,"fdlt1":13.0,"fdlt2":11.0,"fdlt3":8.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":85.0,"lec_dlt2":81.0,"lec_textbook":85.0,"lt":32.0,"fg_cs":86.4,"major":52.0,"fg_pt":87.14,"fg_avg":86.7}}},{"id":"202530459","name":"MOSCOSO, Clauie Jane B.","section":"1C","custom_id":"gtatWQYS","scores":{"midterm":{"dlt_obesity":7.0,"dlt_cellular":8.0,"dlt_anemia":8.0,"dlt_respi":8.0,"jm1":9.0,"jm2":8.0,"jm3":6.0,"jm4":9.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":132.0,"lt":46.0,"mg_cs":85.47,"major":73.0,"mg_pt":95.63,"mg_avg":89.53,"final_rating":87.79,"action":"Passed"},"finals":{"fjm1":8.0,"fjm2":10.0,"fjm3":8.0,"fjm4":11.0,"fdlt1":20.0,"fdlt2":13.0,"fdlt3":10.0,"lec_jml1":81.0,"lec_jml2":122.0,"lec_jml34":135.0,"lec_dlt1":83.0,"lec_dlt2":81.0,"lec_textbook":97.0,"lt":38.0,"fg_cs":88.64,"major":45.0,"fg_pt":82.14,"fg_avg":86.04}}},{"id":"202531316","name":"MOSCOSO, Ellarey Kriziah C.","section":"1C","custom_id":"xHfGTkfT","scores":{"midterm":{"dlt_obesity":9.0,"dlt_cellular":6.0,"dlt_anemia":8.0,"dlt_respi":10.0,"jm1":7.0,"jm2":6.0,"jm3":6.0,"jm4":7.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":137.0,"lec_jm2":134.0,"lec_jm3":124.0,"lt":42.0,"mg_cs":83.52,"major":59.0,"mg_pt":86.88,"mg_avg":84.86,"final_rating":84.74,"action":"Passed"},"finals":{"fjm1":10.0,"fjm2":12.0,"fjm3":10.0,"fjm4":11.0,"fdlt1":10.0,"fdlt2":13.0,"fdlt3":6.0,"lec_jml1":69.0,"lec_jml2":122.0,"lec_jml34":130.0,"lec_dlt1":83.0,"lec_dlt2":80.0,"lec_textbook":92.0,"lt":39.0,"fg_cs":87.2,"major":43.0,"fg_pt":80.71,"fg_avg":84.61}}},{"id":"115238130069","name":"MOSCOSO, Julliene Alexa D.","section":"1C","custom_id":"yUKNXJEJ","scores":{"midterm":{"dlt_obesity":4.0,"dlt_cellular":5.0,"dlt_anemia":6.0,"dlt_respi":3.0,"jm1":3.0,"jm2":3.0,"jm3":3.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":146.0,"lec_jm2":137.0,"lec_jm3":133.0,"lt":47.0,"mg_cs":84.12,"major":63.0,"mg_pt":89.38,"mg_avg":86.22,"final_rating":84.06,"action":"Passed"},"finals":{"fjm1":10.0,"fjm2":9.0,"fjm3":5.0,"fjm4":7.0,"fdlt1":10.0,"fdlt2":11.0,"fdlt3":8.0,"lec_jml1":82.0,"lec_jml2":134.0,"lec_jml34":148.0,"lec_dlt1":85.0,"lec_dlt2":79.0,"lec_textbook":87.0,"lt":34.0,"fg_cs":85.55,"major":37.0,"fg_pt":76.43,"fg_avg":81.9}}},{"id":"202531453","name":"MOSCOSO, Natasha Faye F.","section":"1C","custom_id":"73LLnhbE","scores":{"midterm":{"dlt_obesity":5.0,"dlt_cellular":5.0,"dlt_anemia":7.0,"dlt_respi":6.0,"jm1":7.0,"jm2":6.0,"jm3":2.0,"jm4":1.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":36.0,"mg_cs":80.28,"major":58.0,"mg_pt":86.25,"mg_avg":82.67,"final_rating":82.16,"action":"Passed"},"finals":{"fjm1":9.0,"fjm2":11.0,"fjm3":6.0,"fjm4":7.0,"fdlt1":17.0,"fdlt2":13.0,"fdlt3":5.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":84.0,"lec_dlt2":78.0,"lec_textbook":88.0,"lt":32.0,"fg_cs":86.08,"major":35.0,"fg_pt":75.0,"fg_avg":81.65}}},{"id":"202530108","name":"NALAM, Jayzelbie A.","section":"1C","custom_id":"7vEpctDV","scores":{"midterm":{"dlt_obesity":10.0,"dlt_cellular":9.0,"dlt_anemia":5.0,"dlt_respi":8.0,"jm1":9.0,"jm2":7.0,"jm3":13.0,"jm4":9.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":128.0,"lec_jm2":111.0,"lec_jm3":143.0,"lt":46.0,"mg_cs":85.66,"major":71.0,"mg_pt":94.38,"mg_avg":89.15,"final_rating":89.13,"action":"Passed"},"finals":{"fjm1":15.0,"fjm2":16.0,"fjm3":11.0,"fjm4":13.0,"fdlt1":20.0,"fdlt2":12.0,"fdlt3":12.0,"lec_jml1":91.0,"lec_jml2":126.0,"lec_jml34":132.0,"lec_dlt1":83.0,"lec_dlt2":78.0,"lec_textbook":90.0,"lt":42.0,"fg_cs":91.83,"major":49.0,"fg_pt":85.0,"fg_avg":89.1}}},{"id":"202531322","name":"NEPOMUCENO, Kharl Angelo O.","section":"1C","custom_id":"Q9qwcZWy","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":3.0,"dlt_anemia":6.0,"dlt_respi":2.0,"jm1":6.0,"jm2":5.0,"jm3":6.0,"jm4":3.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":142.0,"lec_jm2":134.0,"lec_jm3":130.0,"lt":40.0,"mg_cs":81.29,"major":66.0,"mg_pt":91.25,"mg_avg":85.27,"final_rating":84.44,"action":"Passed"},"finals":{"fjm1":9.0,"fjm2":8.0,"fjm3":3.0,"fjm4":7.0,"fdlt1":13.0,"fdlt2":11.0,"fdlt3":5.0,"lec_jml1":78.0,"lec_jml2":122.0,"lec_jml34":131.0,"lec_dlt1":82.0,"lec_dlt2":80.0,"lec_textbook":79.0,"lt":32.0,"fg_cs":83.64,"major":47.0,"fg_pt":83.57,"fg_avg":83.61}}},{"id":"114974110036","name":"NIGNA, Angelica Vie L.","section":"1C","custom_id":"R3tNp73k","scores":{"midterm":{"dlt_obesity":7.0,"dlt_cellular":6.0,"dlt_anemia":11.0,"dlt_respi":6.0,"jm1":10.0,"jm2":13.0,"jm3":10.0,"jm4":9.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":148.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":44.0,"mg_cs":85.52,"major":66.0,"mg_pt":91.25,"mg_avg":87.81,"final_rating":89.07,"action":"Passed"},"finals":{"fjm1":13.0,"fjm2":10.0,"fjm3":11.0,"fjm4":15.0,"fdlt1":18.0,"fdlt2":12.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":83.0,"lec_dlt2":72.0,"lec_textbook":100.0,"lt":37.0,"fg_cs":89.6,"major":58.0,"fg_pt":91.43,"fg_avg":90.33}}},{"id":"202530390","name":"OLIVERIO, Francine May S.","section":"1C","custom_id":"GQRU67GX","scores":{"midterm":{"dlt_obesity":7.0,"dlt_cellular":8.0,"dlt_anemia":10.0,"dlt_respi":9.0,"jm1":11.0,"jm2":12.0,"jm3":9.0,"jm4":9.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":44.0,"mg_cs":85.83,"major":73.0,"mg_pt":95.63,"mg_avg":89.75,"final_rating":88.04,"action":"Passed"},"finals":{"fjm1":12.0,"fjm2":10.0,"fjm3":8.0,"fjm4":12.0,"fdlt1":20.0,"fdlt2":14.0,"fdlt3":11.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":82.0,"lec_dlt2":70.0,"lec_textbook":93.0,"lt":33.0,"fg_cs":88.15,"major":47.0,"fg_pt":83.57,"fg_avg":86.32}}},{"id":"202530294","name":"OMAYANA, Ceci Denise G.","section":"1C","custom_id":"wPhfMfT5","scores":{"midterm":{"dlt_obesity":5.0,"dlt_cellular":8.0,"dlt_anemia":9.0,"dlt_respi":9.0,"jm1":2.0,"jm2":5.0,"jm3":3.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":145.0,"lec_jm2":141.0,"lec_jm3":137.0,"lt":42.0,"mg_cs":83.17,"major":61.0,"mg_pt":88.13,"mg_avg":85.15,"final_rating":82.98,"action":"Passed"},"finals":{"fjm1":11.0,"fjm2":8.0,"fjm3":2.0,"fjm4":6.0,"fdlt1":13.0,"fdlt2":6.0,"fdlt3":10.0,"lec_jml1":83.0,"lec_jml2":124.0,"lec_jml34":134.0,"lec_dlt1":82.0,"lec_dlt2":81.0,"lec_textbook":81.0,"lt":30.0,"fg_cs":83.26,"major":38.0,"fg_pt":77.14,"fg_avg":80.81}}},{"id":"115318110022","name":"OPAO, Maria Cassandra R.","section":"1C","custom_id":"yKH4deyK","scores":{"midterm":{"dlt_obesity":3.0,"dlt_cellular":8.0,"dlt_anemia":9.0,"dlt_respi":9.0,"jm1":10.0,"jm2":7.0,"jm3":8.0,"jm4":6.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":45.0,"mg_cs":85.28,"major":75.0,"mg_pt":96.88,"mg_avg":89.92,"final_rating":89.19,"action":"Passed"},"finals":{"fjm1":10.0,"fjm2":10.0,"fjm3":7.0,"fjm4":17.0,"fdlt1":17.0,"fdlt2":9.0,"fdlt3":7.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":83.0,"lec_dlt2":78.0,"lec_textbook":82.0,"lt":43.0,"fg_cs":89.79,"major":51.0,"fg_pt":86.43,"fg_avg":88.45}}},{"id":"202530181","name":"ORONG, Hazel Ann E.","section":"1C","custom_id":"qPyTeTWV","scores":{"midterm":{"dlt_obesity":7.0,"dlt_cellular":6.0,"dlt_anemia":14.0,"dlt_respi":6.0,"jm1":11.0,"jm2":13.0,"jm3":14.0,"jm4":4.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":142.0,"lec_jm2":139.0,"lec_jm3":131.0,"lt":38.0,"mg_cs":83.37,"major":73.0,"mg_pt":95.63,"mg_avg":88.27,"final_rating":89.45,"action":"Passed"},"finals":{"fjm1":16.0,"fjm2":9.0,"fjm3":8.0,"fjm4":16.0,"fdlt1":22.0,"fdlt2":14.0,"fdlt3":8.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":83.0,"lec_dlt2":78.0,"lec_textbook":90.0,"lt":44.0,"fg_cs":92.48,"major":53.0,"fg_pt":87.86,"fg_avg":90.63}}},{"id":"202530374","name":"ORTEGA, Edgar V.","section":"1C","custom_id":"YRMrVLPp","scores":{"midterm":{"dlt_obesity":4.0,"dlt_cellular":5.0,"dlt_anemia":8.0,"dlt_respi":2.0,"jm1":2.0,"jm2":3.0,"jm3":6.0,"jm4":3.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":40.0,"mg_cs":81.68,"major":55.0,"mg_pt":84.38,"mg_avg":82.76,"final_rating":83.87,"action":"Passed"},"finals":{"fjm1":12.0,"fjm2":6.0,"fjm3":5.0,"fjm4":7.0,"fdlt1":16.0,"fdlt2":11.0,"fdlt3":4.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":81.0,"lec_dlt2":78.0,"lec_textbook":89.0,"lt":35.0,"fg_cs":86.4,"major":46.0,"fg_pt":82.86,"fg_avg":84.98}}},{"id":"202530190","name":"OSUYOS, Jella Russ M.","section":"1C","custom_id":"X5dQ6d26","scores":{"midterm":{"dlt_obesity":7.0,"dlt_cellular":9.0,"dlt_anemia":10.0,"dlt_respi":12.0,"jm1":8.0,"jm2":11.0,"jm3":9.0,"jm4":9.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":128.0,"lec_jm2":110.0,"lec_jm3":119.0,"lt":47.0,"mg_cs":86.3,"major":65.0,"mg_pt":90.63,"mg_avg":88.03,"final_rating":86.84,"action":"Passed"},"finals":{"fjm1":13.0,"fjm2":10.0,"fjm3":12.0,"fjm4":12.0,"fdlt1":15.0,"fdlt2":13.0,"fdlt3":7.0,"lec_jml1":80.0,"lec_jml2":111.0,"lec_jml34":129.0,"lec_dlt1":83.0,"lec_dlt2":76.0,"lec_textbook":88.0,"lt":42.0,"fg_cs":88.94,"major":43.0,"fg_pt":80.71,"fg_avg":85.65}}},{"id":"202530435","name":"PACETE, Rodelyn M.","section":"1C","custom_id":"tNHM6cg8","scores":{"midterm":{"dlt_obesity":7.0,"dlt_cellular":6.0,"dlt_anemia":7.0,"dlt_respi":5.0,"jm1":11.0,"jm2":8.0,"jm3":8.0,"jm4":3.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":142.0,"lt":38.0,"mg_cs":81.77,"major":63.0,"mg_pt":89.38,"mg_avg":84.81,"final_rating":85.25,"action":"Passed"},"finals":{"fjm1":11.0,"fjm2":8.0,"fjm3":8.0,"fjm4":8.0,"fdlt1":13.0,"fdlt2":11.0,"fdlt3":9.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":146.0,"lec_dlt1":39.0,"lec_dlt2":60.0,"lec_textbook":80.0,"lt":34.0,"fg_cs":84.24,"major":53.0,"fg_pt":87.86,"fg_avg":85.68}}},{"id":"114976130007","name":"PACHOCO, Krista Leeanne A.","section":"1C","custom_id":"YXtTeGGJ","scores":{"midterm":{"dlt_obesity":8.0,"dlt_cellular":7.0,"dlt_anemia":6.0,"dlt_respi":3.0,"jm1":5.0,"jm2":11.0,"jm3":8.0,"jm4":1.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":94.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":40.0,"mg_cs":81.84,"major":60.0,"mg_pt":87.5,"mg_avg":84.11,"final_rating":84.5,"action":"Passed"},"finals":{"fjm1":12.0,"fjm2":9.0,"fjm3":4.0,"fjm4":8.0,"fdlt1":14.0,"fdlt2":8.0,"fdlt3":9.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":83.0,"lec_dlt2":82.0,"lec_textbook":93.0,"lt":34.0,"fg_cs":86.25,"major":46.0,"fg_pt":82.86,"fg_avg":84.89}}},{"id":"202530397","name":"PACURE, Rian Jane A.","section":"1C","custom_id":"9jYdHfZM","scores":{"midterm":{"dlt_obesity":9.0,"dlt_cellular":4.0,"dlt_anemia":10.0,"dlt_respi":9.0,"jm1":4.0,"jm2":6.0,"jm3":6.0,"jm4":6.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":47.0,"mg_cs":86.07,"major":69.0,"mg_pt":93.13,"mg_avg":88.89,"final_rating":87.47,"action":"Passed"},"finals":{"fjm1":14.0,"fjm2":17.0,"fjm3":11.0,"fjm4":8.0,"fdlt1":13.0,"fdlt2":8.0,"fdlt3":3.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":84.0,"lec_dlt2":74.0,"lec_textbook":97.0,"lt":34.0,"fg_cs":86.75,"major":49.0,"fg_pt":85.0,"fg_avg":86.05}}},{"id":"202530216","name":"PADASAS, Marc Rodulf S.","section":"1C","custom_id":"b9LnsjHN","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":10.0,"dlt_anemia":11.0,"dlt_respi":9.0,"jm1":13.0,"jm2":6.0,"jm3":10.0,"jm4":2.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":131.0,"lec_jm2":123.0,"lec_jm3":126.0,"lt":31.0,"mg_cs":79.58,"major":55.0,"mg_pt":84.38,"mg_avg":81.5,"final_rating":83.28,"action":"Passed"},"finals":{"fjm1":10.0,"fjm2":17.0,"fjm3":10.0,"fjm4":9.0,"fdlt1":21.0,"fdlt2":14.0,"fdlt3":6.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":82.0,"lec_dlt2":73.0,"lec_textbook":84.0,"lt":28.0,"fg_cs":86.03,"major":47.0,"fg_pt":83.57,"fg_avg":85.05}}},{"id":"202530408","name":"PADERNILLA, Erica Rei M.","section":"1C","custom_id":"hRmH2EVj","scores":{"midterm":{"dlt_obesity":10.0,"dlt_cellular":4.0,"dlt_anemia":12.0,"dlt_respi":7.0,"jm1":8.0,"jm2":8.0,"jm3":15.0,"jm4":7.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":38.0,"mg_cs":83.48,"major":65.0,"mg_pt":90.63,"mg_avg":86.34,"final_rating":87.33,"action":"Passed"},"finals":{"fjm1":17.0,"fjm2":14.0,"fjm3":12.0,"fjm4":15.0,"fdlt1":15.0,"fdlt2":13.0,"fdlt3":11.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":86.0,"lec_dlt2":79.0,"lec_textbook":90.0,"lt":41.0,"fg_cs":91.95,"major":46.0,"fg_pt":82.86,"fg_avg":88.31}}},{"id":"202530177","name":"PAGUNALING, Eunice Anne N.","section":"1C","custom_id":"Bvx3J7bk","scores":{"midterm":{"dlt_obesity":9.0,"dlt_cellular":9.0,"dlt_anemia":10.0,"dlt_respi":8.0,"jm1":8.0,"jm2":8.0,"jm3":4.0,"jm4":4.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":39.0,"mg_cs":83.08,"major":64.0,"mg_pt":90.0,"mg_avg":85.85,"final_rating":89.02,"action":"Passed"},"finals":{"fjm1":13.0,"fjm2":12.0,"fjm3":10.0,"fjm4":8.0,"fdlt1":16.0,"fdlt2":11.0,"fdlt3":8.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":148.0,"lec_dlt1":81.0,"lec_dlt2":79.0,"lec_textbook":94.0,"lt":46.0,"fg_cs":91.26,"major":61.0,"fg_pt":93.57,"fg_avg":92.19}}},{"id":"202530316","name":"PAHILGA, Braven Nash P.","section":"1C","custom_id":"gjhUzqqq","scores":{"midterm":{"dlt_obesity":5.0,"dlt_cellular":4.0,"dlt_anemia":7.0,"dlt_respi":3.0,"jm1":1.0,"jm2":3.0,"jm3":2.0,"jm4":1.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":38.0,"mg_cs":80.51,"major":53.0,"mg_pt":83.13,"mg_avg":81.56,"final_rating":82.49,"action":"Passed"},"finals":{"fjm1":3.0,"fjm2":8.0,"fjm3":3.0,"fjm4":4.0,"fdlt1":16.0,"fdlt2":10.0,"fdlt3":5.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":83.0,"lec_dlt2":78.0,"lec_textbook":93.0,"lt":36.0,"fg_cs":86.17,"major":41.0,"fg_pt":79.29,"fg_avg":83.42}}},{"id":"202530422","name":"PAJATE, Leanne I.","section":"1C","custom_id":"nckdkLTX","scores":{"midterm":{"dlt_obesity":5.0,"dlt_cellular":3.0,"dlt_anemia":10.0,"dlt_respi":7.0,"jm1":8.0,"jm2":6.0,"jm3":8.0,"jm4":3.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":130.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":32.0,"mg_cs":79.06,"major":67.0,"mg_pt":91.88,"mg_avg":84.19,"final_rating":83.94,"action":"Passed"},"finals":{"fjm1":9.0,"fjm2":9.0,"fjm3":8.0,"fjm4":9.0,"fdlt1":17.0,"fdlt2":10.0,"fdlt3":9.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":149.0,"lec_dlt1":42.0,"lec_dlt2":21.0,"lec_textbook":81.0,"lt":37.0,"fg_cs":84.72,"major":45.0,"fg_pt":82.14,"fg_avg":83.69}}},{"id":"202530624","name":"PALCORIN, Hannah Sophia N.","section":"1C","custom_id":"LeMxCPg8","scores":{"midterm":{"dlt_obesity":9.0,"dlt_cellular":5.0,"dlt_anemia":10.0,"dlt_respi":8.0,"jm1":5.0,"jm2":5.0,"jm3":7.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":142.0,"lec_jm2":129.0,"lec_jm3":129.0,"lt":46.0,"mg_cs":85.01,"major":60.0,"mg_pt":87.5,"mg_avg":86.01,"final_rating":86.15,"action":"Passed"},"finals":{"fjm1":12.0,"fjm2":13.0,"fjm3":8.0,"fjm4":8.0,"fdlt1":19.0,"fdlt2":14.0,"fdlt3":null,"lec_jml1":87.0,"lec_jml2":127.0,"lec_jml34":137.0,"lec_dlt1":83.0,"lec_dlt2":79.0,"lec_textbook":89.0,"lt":33.0,"fg_cs":82.87,"major":58.0,"fg_pt":91.43,"fg_avg":86.29}}},{"id":"202530379","name":"PANAGUITON, John Garell S.","section":"1C","custom_id":"CnVTPWk4","scores":{"midterm":{"dlt_obesity":5.0,"dlt_cellular":8.0,"dlt_anemia":11.0,"dlt_respi":6.0,"jm1":15.0,"jm2":12.0,"jm3":13.0,"jm4":10.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":51.0,"mg_cs":89.29,"major":72.0,"mg_pt":95.0,"mg_avg":91.58,"final_rating":89.74,"action":"Passed"},"finals":{"fjm1":18.0,"fjm2":17.0,"fjm3":15.0,"fjm4":14.0,"fdlt1":21.0,"fdlt2":15.0,"fdlt3":7.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":83.0,"lec_dlt2":78.0,"lec_textbook":88.0,"lt":38.0,"fg_cs":91.74,"major":45.0,"fg_pt":82.14,"fg_avg":87.9}}},{"id":"438514150110","name":"PANGANIBAN, Audry Lorriene B.","section":"1C","custom_id":"gdvPMm3s","scores":{"midterm":{"dlt_obesity":12.0,"dlt_cellular":13.0,"dlt_anemia":12.0,"dlt_respi":10.0,"jm1":15.0,"jm2":15.0,"jm3":18.0,"jm4":10.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":46.0,"mg_cs":90.07,"major":75.0,"mg_pt":96.88,"mg_avg":92.79,"final_rating":95.27,"action":"Passed"},"finals":{"fjm1":16.0,"fjm2":16.0,"fjm3":15.0,"fjm4":14.0,"fdlt1":18.0,"fdlt2":14.0,"fdlt3":13.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":86.0,"lec_dlt2":81.0,"lec_textbook":91.0,"lt":50.0,"fg_cs":96.24,"major":70.0,"fg_pt":100.0,"fg_avg":97.75}}},{"id":"115065140002","name":"PARKER, Theonnie N.","section":"1C","custom_id":"Erg6awJZ","scores":{"midterm":{"dlt_obesity":11.0,"dlt_cellular":10.0,"dlt_anemia":9.0,"dlt_respi":10.0,"jm1":8.0,"jm2":12.0,"jm3":16.0,"jm4":8.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":142.0,"lec_jm3":145.0,"lt":27.0,"mg_cs":80.6,"major":66.0,"mg_pt":91.25,"mg_avg":84.86,"final_rating":87.49,"action":"Passed"},"finals":{"fjm1":14.0,"fjm2":12.0,"fjm3":11.0,"fjm4":7.0,"fdlt1":15.0,"fdlt2":14.0,"fdlt3":9.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":141.0,"lec_dlt1":84.0,"lec_dlt2":79.0,"lec_textbook":86.0,"lt":34.0,"fg_cs":87.8,"major":61.0,"fg_pt":93.57,"fg_avg":90.11}}},{"id":"115218120210","name":"PAULINO, Mary Grace D.","section":"1C","custom_id":"f9w6K8kj","scores":{"midterm":{"dlt_obesity":7.0,"dlt_cellular":6.0,"dlt_anemia":8.0,"dlt_respi":4.0,"jm1":5.0,"jm2":7.0,"jm3":9.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":37.0,"mg_cs":81.26,"major":63.0,"mg_pt":89.38,"mg_avg":84.51,"final_rating":85.43,"action":"Passed"},"finals":{"fjm1":11.0,"fjm2":12.0,"fjm3":8.0,"fjm4":6.0,"fdlt1":17.0,"fdlt2":12.0,"fdlt3":6.0,"lec_jml1":87.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":84.0,"lec_dlt2":78.0,"lec_textbook":97.0,"lt":36.0,"fg_cs":87.73,"major":48.0,"fg_pt":84.29,"fg_avg":86.35}}},{"id":"202530400","name":"PECHAYCO, Neriel M.","section":"1C","custom_id":"VdGmaCnm","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":7.0,"dlt_anemia":10.0,"dlt_respi":7.0,"jm1":8.0,"jm2":6.0,"jm3":11.0,"jm4":7.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":148.0,"lec_jm2":146.0,"lec_jm3":51.0,"lt":41.0,"mg_cs":82.69,"major":65.0,"mg_pt":90.63,"mg_avg":85.86,"final_rating":85.55,"action":"Passed"},"finals":{"fjm1":11.0,"fjm2":13.0,"fjm3":9.0,"fjm4":6.0,"fdlt1":18.0,"fdlt2":9.0,"fdlt3":6.0,"lec_jml1":79.0,"lec_jml2":137.0,"lec_jml34":150.0,"lec_dlt1":84.0,"lec_dlt2":77.0,"lec_textbook":87.0,"lt":33.0,"fg_cs":85.85,"major":48.0,"fg_pt":84.29,"fg_avg":85.23}}},{"id":"202530275","name":"PIANSAY, Jomir T.","section":"1C","custom_id":"ur9DHkBb","scores":{"midterm":{"dlt_obesity":5.0,"dlt_cellular":5.0,"dlt_anemia":8.0,"dlt_respi":2.0,"jm1":2.0,"jm2":7.0,"jm3":9.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":45.0,"mg_cs":84.19,"major":63.0,"mg_pt":89.38,"mg_avg":86.27,"final_rating":84.68,"action":"Passed"},"finals":{"fjm1":8.0,"fjm2":8.0,"fjm3":8.0,"fjm4":13.0,"fdlt1":21.0,"fdlt2":12.0,"fdlt3":6.0,"lec_jml1":90.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":79.0,"lec_dlt2":67.0,"lec_textbook":73.0,"lt":33.0,"fg_cs":86.08,"major":40.0,"fg_pt":78.57,"fg_avg":83.08}}},{"id":"202530288","name":"PON-AN, Mariane J.","section":"1C","custom_id":"dwhVtr64","scores":{"midterm":{"dlt_obesity":11.0,"dlt_cellular":7.0,"dlt_anemia":12.0,"dlt_respi":11.0,"jm1":8.0,"jm2":10.0,"jm3":10.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":146.0,"lec_jm2":144.0,"lec_jm3":134.0,"lt":44.0,"mg_cs":85.99,"major":73.0,"mg_pt":95.63,"mg_avg":89.84,"final_rating":89.76,"action":"Passed"},"finals":{"fjm1":14.0,"fjm2":10.0,"fjm3":8.0,"fjm4":10.0,"fdlt1":10.0,"fdlt2":12.0,"fdlt3":12.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":86.0,"lec_dlt2":76.0,"lec_textbook":null,"lt":44.0,"fg_cs":85.65,"major":64.0,"fg_pt":95.71,"fg_avg":89.67}}},{"id":"202531051","name":"PUNO, Crystal Arriane T.","section":"1C","custom_id":"3r8TRNyv","scores":{"midterm":{"dlt_obesity":3.0,"dlt_cellular":6.0,"dlt_anemia":6.0,"dlt_respi":3.0,"jm1":3.0,"jm2":6.0,"jm3":5.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":143.0,"lec_jm2":140.0,"lec_jm3":134.0,"lt":40.0,"mg_cs":81.43,"major":66.0,"mg_pt":91.25,"mg_avg":85.36,"final_rating":84.37,"action":"Passed"},"finals":{"fjm1":12.0,"fjm2":9.0,"fjm3":6.0,"fjm4":6.0,"fdlt1":9.0,"fdlt2":7.0,"fdlt3":12.0,"lec_jml1":81.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":83.0,"lec_dlt2":77.0,"lec_textbook":92.0,"lt":39.0,"fg_cs":87.53,"major":38.0,"fg_pt":77.14,"fg_avg":83.37}}},{"id":"202530802","name":"QUILINO, Jovane Mercel C.","section":"1D","custom_id":"fKQP6b4g","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":6.0,"dlt_anemia":11.0,"dlt_respi":11.0,"jm1":13.0,"jm2":10.0,"jm3":3.0,"jm4":10.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":50.0,"mg_cs":88.33,"major":71.0,"mg_pt":94.38,"mg_avg":90.75,"final_rating":89.85,"action":"Passed"},"finals":{"fjm1":18.0,"fjm2":12.0,"fjm3":12.0,"fjm4":10.0,"fdlt1":14.0,"fdlt2":13.0,"fdlt3":12.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":85.0,"lec_dlt2":80.0,"lec_textbook":93.0,"lt":47.0,"fg_cs":93.48,"major":45.0,"fg_pt":82.14,"fg_avg":88.95}}},{"id":"202530149","name":"RAMOS, Danielle Joy S.","section":"1D","custom_id":"LmFPA5nX","scores":{"midterm":{"dlt_obesity":8.0,"dlt_cellular":5.0,"dlt_anemia":4.0,"dlt_respi":11.0,"jm1":4.0,"jm2":5.0,"jm3":13.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":146.0,"lec_jm3":151.0,"lt":42.0,"mg_cs":84.02,"major":69.0,"mg_pt":93.13,"mg_avg":87.66,"final_rating":87.07,"action":"Passed"},"finals":{"fjm1":11.0,"fjm2":15.0,"fjm3":15.0,"fjm4":4.0,"fdlt1":20.0,"fdlt2":7.0,"fdlt3":14.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":60.0,"lec_dlt2":35.0,"lec_textbook":90.0,"lt":38.0,"fg_cs":87.93,"major":48.0,"fg_pt":84.29,"fg_avg":86.47}}},{"id":"202530193","name":"ROCETA, Shahana Paulene B.","section":"1D","custom_id":"FNthVXkL","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":8.0,"dlt_anemia":9.0,"dlt_respi":7.0,"jm1":6.0,"jm2":6.0,"jm3":13.0,"jm4":1.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":144.0,"lec_jm2":137.0,"lec_jm3":128.0,"lt":38.0,"mg_cs":81.82,"major":69.0,"mg_pt":93.13,"mg_avg":86.34,"final_rating":84.46,"action":"Passed"},"finals":{"fjm1":13.0,"fjm2":14.0,"fjm3":15.0,"fjm4":8.0,"fdlt1":17.0,"fdlt2":13.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":147.0,"lec_dlt1":85.0,"lec_dlt2":82.0,"lec_textbook":null,"lt":33.0,"fg_cs":83.33,"major":44.0,"fg_pt":81.43,"fg_avg":82.57}}},{"id":"202530273","name":"ROSENDO, Daren Paul S.","section":"1D","custom_id":"2CT7DRGE","scores":{"midterm":{"dlt_obesity":10.0,"dlt_cellular":7.0,"dlt_anemia":10.0,"dlt_respi":13.0,"jm1":15.0,"jm2":13.0,"jm3":18.0,"jm4":9.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":52.0,"mg_cs":91.39,"major":78.0,"mg_pt":98.75,"mg_avg":94.33,"final_rating":94.86,"action":"Passed"},"finals":{"fjm1":20.0,"fjm2":19.0,"fjm3":17.0,"fjm4":10.0,"fdlt1":22.0,"fdlt2":14.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":87.0,"lec_dlt2":78.0,"lec_textbook":98.0,"lt":48.0,"fg_cs":96.12,"major":62.0,"fg_pt":94.29,"fg_avg":95.38}}},{"id":"202531258","name":"RUENATA, Jolyn Marie U.","section":"1D","custom_id":"gUcUPqM8","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":7.0,"dlt_anemia":12.0,"dlt_respi":11.0,"jm1":9.0,"jm2":16.0,"jm3":11.0,"jm4":4.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":47.0,"mg_cs":87.69,"major":70.0,"mg_pt":93.75,"mg_avg":90.11,"final_rating":91.28,"action":"Passed"},"finals":{"fjm1":12.0,"fjm2":9.0,"fjm3":11.0,"fjm4":10.0,"fdlt1":20.0,"fdlt2":9.0,"fdlt3":9.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":85.0,"lec_dlt2":76.0,"lec_textbook":88.0,"lt":43.0,"fg_cs":90.27,"major":64.0,"fg_pt":95.71,"fg_avg":92.45}}},{"id":"202530182","name":"SALCEDO, Jannah May O.","section":"1D","custom_id":"zRTLwc9h","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":8.0,"dlt_anemia":8.0,"dlt_respi":9.0,"jm1":8.0,"jm2":4.0,"jm3":8.0,"jm4":2.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":150.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":45.0,"mg_cs":84.91,"major":63.0,"mg_pt":89.38,"mg_avg":86.7,"final_rating":86.4,"action":"Passed"},"finals":{"fjm1":13.0,"fjm2":12.0,"fjm3":12.0,"fjm4":7.0,"fdlt1":14.0,"fdlt2":11.0,"fdlt3":9.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":86.0,"lec_dlt2":77.0,"lec_textbook":96.0,"lt":36.0,"fg_cs":88.26,"major":46.0,"fg_pt":82.86,"fg_avg":86.1}}},{"id":"202531123","name":"SALOMON, Ann Marie A.","section":"1D","custom_id":"L7nqdCtk","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":7.0,"dlt_anemia":9.0,"dlt_respi":9.0,"jm1":10.0,"jm2":3.0,"jm3":8.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":133.0,"lec_jm2":117.0,"lec_jm3":90.0,"lt":43.0,"mg_cs":83.08,"major":67.0,"mg_pt":91.88,"mg_avg":86.6,"final_rating":85.72,"action":"Passed"},"finals":{"fjm1":11.0,"fjm2":11.0,"fjm3":11.0,"fjm4":12.0,"fdlt1":12.0,"fdlt2":15.0,"fdlt3":12.0,"lec_jml1":72.0,"lec_jml2":116.0,"lec_jml34":125.0,"lec_dlt1":70.0,"lec_dlt2":50.0,"lec_textbook":91.0,"lt":37.0,"fg_cs":86.61,"major":45.0,"fg_pt":82.14,"fg_avg":84.83}}},{"id":"115069130092","name":"SANGAT, Roena V.","section":"1D","custom_id":"Tw2Qc4kt","scores":{"midterm":{"dlt_obesity":9.0,"dlt_cellular":11.0,"dlt_anemia":11.0,"dlt_respi":12.0,"jm1":8.0,"jm2":11.0,"jm3":10.0,"jm4":8.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":102.0,"lec_jm2":null,"lec_jm3":null,"lt":42.0,"mg_cs":83.03,"major":71.0,"mg_pt":94.38,"mg_avg":87.57,"final_rating":88.27,"action":"Passed"},"finals":{"fjm1":18.0,"fjm2":14.0,"fjm3":14.0,"fjm4":12.0,"fdlt1":23.0,"fdlt2":15.0,"fdlt3":12.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":141.0,"lec_dlt1":85.0,"lec_dlt2":71.0,"lec_textbook":98.0,"lt":35.0,"fg_cs":91.14,"major":50.0,"fg_pt":85.71,"fg_avg":88.97}}},{"id":"115094130022","name":"SANTA CRUZ, Cyndy S.","section":"1D","custom_id":"w9mptVn7","scores":{"midterm":{"dlt_obesity":11.0,"dlt_cellular":8.0,"dlt_anemia":11.0,"dlt_respi":14.0,"jm1":17.0,"jm2":11.0,"jm3":16.0,"jm4":4.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":140.0,"lec_jm2":125.0,"lec_jm3":123.0,"lt":47.0,"mg_cs":88.71,"major":69.0,"mg_pt":93.13,"mg_avg":90.48,"final_rating":92.18,"action":"Passed"},"finals":{"fjm1":16.0,"fjm2":17.0,"fjm3":15.0,"fjm4":15.0,"fdlt1":20.0,"fdlt2":11.0,"fdlt3":10.0,"lec_jml1":78.0,"lec_jml2":125.0,"lec_jml34":137.0,"lec_dlt1":83.0,"lec_dlt2":80.0,"lec_textbook":99.0,"lt":48.0,"fg_cs":94.09,"major":61.0,"fg_pt":93.57,"fg_avg":93.88}}},{"id":"202530429","name":"SANTILLAN, Simeon Benedick M.","section":"1D","custom_id":"qW8k6rAN","scores":{"midterm":{"dlt_obesity":11.0,"dlt_cellular":6.0,"dlt_anemia":12.0,"dlt_respi":11.0,"jm1":15.0,"jm2":13.0,"jm3":17.0,"jm4":6.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":148.0,"lt":47.0,"mg_cs":89.13,"major":71.0,"mg_pt":94.38,"mg_avg":91.23,"final_rating":90.32,"action":"Passed"},"finals":{"fjm1":18.0,"fjm2":16.0,"fjm3":15.0,"fjm4":11.0,"fdlt1":21.0,"fdlt2":14.0,"fdlt3":11.0,"lec_jml1":87.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":32.0,"lec_dlt2":20.0,"lec_textbook":96.0,"lt":42.0,"fg_cs":90.42,"major":53.0,"fg_pt":87.86,"fg_avg":89.4}}},{"id":"202530401","name":"SARCON, Belle Keziah I.","section":"1D","custom_id":"8Mx87pFp","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":9.0,"dlt_anemia":12.0,"dlt_respi":6.0,"jm1":14.0,"jm2":12.0,"jm3":12.0,"jm4":4.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":43.0,"mg_cs":85.83,"major":66.0,"mg_pt":91.25,"mg_avg":88.0,"final_rating":86.82,"action":"Passed"},"finals":{"fjm1":14.0,"fjm2":11.0,"fjm3":10.0,"fjm4":8.0,"fdlt1":19.0,"fdlt2":10.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":85.0,"lec_dlt2":80.0,"lec_textbook":95.0,"lt":41.0,"fg_cs":90.36,"major":40.0,"fg_pt":78.57,"fg_avg":85.64}}},{"id":"202530420","name":"SEBON, Hanna Alijah G.","section":"1D","custom_id":"mWc2WeRC","scores":{"midterm":{"dlt_obesity":10.0,"dlt_cellular":7.0,"dlt_anemia":7.0,"dlt_respi":6.0,"jm1":8.0,"jm2":7.0,"jm3":7.0,"jm4":4.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":139.0,"lec_jm2":127.0,"lec_jm3":39.0,"lt":39.0,"mg_cs":81.18,"major":66.0,"mg_pt":91.25,"mg_avg":85.21,"final_rating":84.02,"action":"Passed"},"finals":{"fjm1":11.0,"fjm2":6.0,"fjm3":4.0,"fjm4":8.0,"fdlt1":18.0,"fdlt2":13.0,"fdlt3":13.0,"lec_jml1":91.0,"lec_jml2":133.0,"lec_jml34":147.0,"lec_dlt1":83.0,"lec_dlt2":79.0,"lec_textbook":null,"lt":42.0,"fg_cs":85.19,"major":41.0,"fg_pt":79.29,"fg_avg":82.83}}},{"id":"202530335","name":"SEMBRAN, Virgilyn G.","section":"1D","custom_id":"yuMQxLbt","scores":{"midterm":{"dlt_obesity":11.0,"dlt_cellular":6.0,"dlt_anemia":13.0,"dlt_respi":12.0,"jm1":13.0,"jm2":10.0,"jm3":15.0,"jm4":9.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":48.0,"mg_cs":89.25,"major":76.0,"mg_pt":97.5,"mg_avg":92.55,"final_rating":93.58,"action":"Passed"},"finals":{"fjm1":17.0,"fjm2":19.0,"fjm3":11.0,"fjm4":14.0,"fdlt1":22.0,"fdlt2":15.0,"fdlt3":13.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":79.0,"lec_dlt2":77.0,"lec_textbook":97.0,"lt":43.0,"fg_cs":94.35,"major":63.0,"fg_pt":95.0,"fg_avg":94.61}}},{"id":"115218130216","name":"SEMOLAVA, Allen B.","section":"1D","custom_id":"wc66xN9x","scores":{"midterm":{"dlt_obesity":10.0,"dlt_cellular":5.0,"dlt_anemia":10.0,"dlt_respi":6.0,"jm1":7.0,"jm2":1.0,"jm3":5.0,"jm4":6.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":140.0,"lec_jm3":17.0,"lt":35.0,"mg_cs":79.68,"major":72.0,"mg_pt":95.0,"mg_avg":85.81,"final_rating":85.26,"action":"Passed"},"finals":{"fjm1":4.0,"fjm2":8.0,"fjm3":5.0,"fjm4":14.0,"fdlt1":14.0,"fdlt2":9.0,"fdlt3":7.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":148.0,"lec_dlt1":83.0,"lec_dlt2":75.0,"lec_textbook":79.0,"lt":31.0,"fg_cs":84.49,"major":49.0,"fg_pt":85.0,"fg_avg":84.7}}},{"id":"202530597","name":"SERENEO, Krystel Grace J.","section":"1D","custom_id":"yAe9p9cW","scores":{"midterm":{"dlt_obesity":10.0,"dlt_cellular":7.0,"dlt_anemia":15.0,"dlt_respi":14.0,"jm1":15.0,"jm2":8.0,"jm3":16.0,"jm4":10.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":48.0,"mg_cs":89.99,"major":64.0,"mg_pt":90.0,"mg_avg":90.0,"final_rating":88.34,"action":"Passed"},"finals":{"fjm1":14.0,"fjm2":17.0,"fjm3":14.0,"fjm4":13.0,"fdlt1":23.0,"fdlt2":12.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":84.0,"lec_dlt2":75.0,"lec_textbook":null,"lt":42.0,"fg_cs":87.33,"major":50.0,"fg_pt":85.71,"fg_avg":86.68}}},{"id":"202531023","name":"SETIAS, Kate","section":"1D","custom_id":"mVXLx3gq","scores":{"midterm":{"dlt_obesity":11.0,"dlt_cellular":6.0,"dlt_anemia":11.0,"dlt_respi":13.0,"jm1":16.0,"jm2":4.0,"jm3":6.0,"jm4":9.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":44.0,"mg_cs":86.82,"major":69.0,"mg_pt":93.13,"mg_avg":89.34,"final_rating":92.22,"action":"Passed"},"finals":{"fjm1":17.0,"fjm2":14.0,"fjm3":14.0,"fjm4":17.0,"fdlt1":22.0,"fdlt2":14.0,"fdlt3":9.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":75.0,"lec_dlt2":68.0,"lec_textbook":93.0,"lt":48.0,"fg_cs":94.67,"major":64.0,"fg_pt":95.71,"fg_avg":95.09}}},{"id":"202530414","name":"SEVERINO, Mercy Joy G.","section":"1D","custom_id":"kRRptDHc","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":6.0,"dlt_anemia":11.0,"dlt_respi":9.0,"jm1":11.0,"jm2":7.0,"jm3":12.0,"jm4":7.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":140.0,"lec_jm2":135.0,"lec_jm3":129.0,"lt":44.0,"mg_cs":85.08,"major":65.0,"mg_pt":90.63,"mg_avg":87.3,"final_rating":89.57,"action":"Passed"},"finals":{"fjm1":10.0,"fjm2":9.0,"fjm3":13.0,"fjm4":12.0,"fdlt1":16.0,"fdlt2":9.0,"fdlt3":6.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":83.0,"lec_dlt2":78.0,"lec_textbook":74.0,"lt":43.0,"fg_cs":89.26,"major":64.0,"fg_pt":95.71,"fg_avg":91.84}}},{"id":"115243160001","name":"SINGSON, Raizein Cal Roi S.","section":"1D","custom_id":"RAWJr3MW","scores":{"midterm":{"dlt_obesity":12.0,"dlt_cellular":8.0,"dlt_anemia":11.0,"dlt_respi":11.0,"jm1":8.0,"jm2":3.0,"jm3":9.0,"jm4":8.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":131.0,"lec_jm2":132.0,"lec_jm3":123.0,"lt":41.0,"mg_cs":84.21,"major":73.0,"mg_pt":95.63,"mg_avg":88.77,"final_rating":90.95,"action":"Passed"},"finals":{"fjm1":12.0,"fjm2":11.0,"fjm3":11.0,"fjm4":12.0,"fdlt1":23.0,"fdlt2":15.0,"fdlt3":8.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":83.0,"lec_dlt2":73.0,"lec_textbook":81.0,"lt":44.0,"fg_cs":91.86,"major":63.0,"fg_pt":95.0,"fg_avg":93.12}}},{"id":"202530219","name":"TABALANZA, Kent Joshua S.","section":"1D","custom_id":"saCENhdj","scores":{"midterm":{"dlt_obesity":8.0,"dlt_cellular":5.0,"dlt_anemia":7.0,"dlt_respi":8.0,"jm1":6.0,"jm2":3.0,"jm3":10.0,"jm4":3.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":134.0,"lec_jm2":130.0,"lec_jm3":125.0,"lt":34.0,"mg_cs":79.38,"major":65.0,"mg_pt":90.63,"mg_avg":83.88,"final_rating":84.91,"action":"Passed"},"finals":{"fjm1":10.0,"fjm2":10.0,"fjm3":8.0,"fjm4":7.0,"fdlt1":15.0,"fdlt2":7.0,"fdlt3":7.0,"lec_jml1":77.0,"lec_jml2":121.0,"lec_jml34":130.0,"lec_dlt1":83.0,"lec_dlt2":79.0,"lec_textbook":85.0,"lt":39.0,"fg_cs":86.09,"major":50.0,"fg_pt":85.71,"fg_avg":85.94}}},{"id":"202530883","name":"TAMON, Zyra T.","section":"1D","custom_id":"5CR4J8gP","scores":{"midterm":{"dlt_obesity":4.0,"dlt_cellular":8.0,"dlt_anemia":9.0,"dlt_respi":8.0,"jm1":5.0,"jm2":18.0,"jm3":12.0,"jm4":6.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":44.0,"mg_cs":85.82,"major":62.0,"mg_pt":88.75,"mg_avg":86.99,"final_rating":88.46,"action":"Passed"},"finals":{"fjm1":12.0,"fjm2":9.0,"fjm3":7.0,"fjm4":12.0,"fdlt1":19.0,"fdlt2":11.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":83.0,"lec_dlt2":77.0,"lec_textbook":82.0,"lt":34.0,"fg_cs":87.5,"major":61.0,"fg_pt":93.57,"fg_avg":89.93}}},{"id":"202530620","name":"TARROZA, Aira S.","section":"1D","custom_id":"RMWLEYgG","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":6.0,"dlt_anemia":11.0,"dlt_respi":11.0,"jm1":9.0,"jm2":9.0,"jm3":17.0,"jm4":8.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":144.0,"lt":40.0,"mg_cs":84.62,"major":67.0,"mg_pt":91.88,"mg_avg":87.52,"final_rating":88.26,"action":"Passed"},"finals":{"fjm1":12.0,"fjm2":14.0,"fjm3":8.0,"fjm4":6.0,"fdlt1":20.0,"fdlt2":14.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":82.0,"lec_dlt2":73.0,"lec_textbook":92.0,"lt":38.0,"fg_cs":89.74,"major":53.0,"fg_pt":87.86,"fg_avg":88.99}}},{"id":"202530128","name":"TELESFORO, Blaise A.","section":"1D","custom_id":"pWevVxKw","scores":{"midterm":{"dlt_obesity":11.0,"dlt_cellular":10.0,"dlt_anemia":14.0,"dlt_respi":12.0,"jm1":14.0,"jm2":16.0,"jm3":19.0,"jm4":14.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":150.0,"lt":53.0,"mg_cs":93.5,"major":75.0,"mg_pt":96.88,"mg_avg":94.85,"final_rating":95.89,"action":"Passed"},"finals":{"fjm1":19.0,"fjm2":19.0,"fjm3":17.0,"fjm4":16.0,"fdlt1":24.0,"fdlt2":15.0,"fdlt3":11.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":81.0,"lec_dlt2":79.0,"lec_textbook":98.0,"lt":50.0,"fg_cs":97.74,"major":64.0,"fg_pt":95.71,"fg_avg":96.93}}},{"id":"202530531","name":"TEMPLORA, Therese Adelle Victoria M.","section":"1D","custom_id":"5x9hF58f","scores":{"midterm":{"dlt_obesity":11.0,"dlt_cellular":6.0,"dlt_anemia":10.0,"dlt_respi":15.0,"jm1":8.0,"jm2":11.0,"jm3":16.0,"jm4":14.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":51.0,"mg_cs":90.77,"major":72.0,"mg_pt":95.0,"mg_avg":92.46,"final_rating":92.92,"action":"Passed"},"finals":{"fjm1":16.0,"fjm2":14.0,"fjm3":10.0,"fjm4":15.0,"fdlt1":20.0,"fdlt2":8.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":95.0,"lec_jml34":151.0,"lec_dlt1":34.0,"lec_dlt2":78.0,"lec_textbook":94.0,"lt":50.0,"fg_cs":91.83,"major":64.0,"fg_pt":95.71,"fg_avg":93.38}}},{"id":"202530295","name":"TEVES, Kristine Joy P.","section":"1D","custom_id":"k2KyPGM2","scores":{"midterm":{"dlt_obesity":9.0,"dlt_cellular":7.0,"dlt_anemia":10.0,"dlt_respi":10.0,"jm1":7.0,"jm2":14.0,"jm3":13.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":37.0,"mg_cs":83.35,"major":68.0,"mg_pt":92.5,"mg_avg":87.01,"final_rating":89.21,"action":"Passed"},"finals":{"fjm1":13.0,"fjm2":15.0,"fjm3":7.0,"fjm4":10.0,"fdlt1":15.0,"fdlt2":9.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":85.0,"lec_dlt2":79.0,"lec_textbook":86.0,"lt":46.0,"fg_cs":91.38,"major":58.0,"fg_pt":91.43,"fg_avg":91.4}}},{"id":"202530430","name":"TORGA, Cwen Cahira Jane B.","section":"1D","custom_id":"jQnyx93q","scores":{"midterm":{"dlt_obesity":7.0,"dlt_cellular":7.0,"dlt_anemia":8.0,"dlt_respi":2.0,"jm1":7.0,"jm2":4.0,"jm3":8.0,"jm4":1.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":140.0,"lec_jm2":139.0,"lec_jm3":125.0,"lt":40.0,"mg_cs":81.7,"major":66.0,"mg_pt":91.25,"mg_avg":85.52,"final_rating":85.16,"action":"Passed"},"finals":{"fjm1":11.0,"fjm2":7.0,"fjm3":3.0,"fjm4":5.0,"fdlt1":18.0,"fdlt2":8.0,"fdlt3":7.0,"lec_jml1":81.0,"lec_jml2":133.0,"lec_jml34":139.0,"lec_dlt1":84.0,"lec_dlt2":78.0,"lec_textbook":91.0,"lt":45.0,"fg_cs":88.93,"major":40.0,"fg_pt":78.57,"fg_avg":84.79}}},{"id":"202530266","name":"UMADHAY, Rhissa Joyce G.","section":"1D","custom_id":"GVYprnzQ","scores":{"midterm":{"dlt_obesity":5.0,"dlt_cellular":6.0,"dlt_anemia":10.0,"dlt_respi":15.0,"jm1":2.0,"jm2":17.0,"jm3":10.0,"jm4":6.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":49.0,"mg_cs":88.48,"major":66.0,"mg_pt":91.25,"mg_avg":89.59,"final_rating":90.84,"action":"Passed"},"finals":{"fjm1":10.0,"fjm2":15.0,"fjm3":9.0,"fjm4":13.0,"fdlt1":13.0,"fdlt2":9.0,"fdlt3":9.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":82.0,"lec_dlt2":79.0,"lec_textbook":91.0,"lt":46.0,"fg_cs":91.1,"major":61.0,"fg_pt":93.57,"fg_avg":92.09}}},{"id":"114980110051","name":"UNGSOD, Ramon Christoffe B.","section":"1D","custom_id":"4F3YpGhn","scores":{"midterm":{"dlt_obesity":11.0,"dlt_cellular":6.0,"dlt_anemia":11.0,"dlt_respi":10.0,"jm1":7.0,"jm2":4.0,"jm3":10.0,"jm4":6.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":151.0,"lec_jm2":147.0,"lec_jm3":126.0,"lt":38.0,"mg_cs":82.91,"major":73.0,"mg_pt":95.63,"mg_avg":87.99,"final_rating":87.42,"action":"Passed"},"finals":{"fjm1":8.0,"fjm2":10.0,"fjm3":9.0,"fjm4":12.0,"fdlt1":17.0,"fdlt2":7.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":84.0,"lec_dlt2":75.0,"lec_textbook":83.0,"lt":39.0,"fg_cs":88.09,"major":49.0,"fg_pt":85.0,"fg_avg":86.85}}},{"id":"202530868","name":"VALDELLON, Kevin A.","section":"1D","custom_id":"zqt8N6wr","scores":{"midterm":{"dlt_obesity":12.0,"dlt_cellular":11.0,"dlt_anemia":11.0,"dlt_respi":8.0,"jm1":15.0,"jm2":6.0,"jm3":17.0,"jm4":14.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":134.0,"lec_jm2":123.0,"lec_jm3":90.0,"lt":47.0,"mg_cs":88.27,"major":74.0,"mg_pt":96.25,"mg_avg":91.46,"final_rating":91.25,"action":"Passed"},"finals":{"fjm1":17.0,"fjm2":14.0,"fjm3":12.0,"fjm4":16.0,"fdlt1":22.0,"fdlt2":13.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":133.0,"lec_dlt1":37.0,"lec_dlt2":29.0,"lec_textbook":93.0,"lt":43.0,"fg_cs":90.28,"major":59.0,"fg_pt":92.14,"fg_avg":91.03}}},{"id":"115408130104","name":"VALERTA, Allyssa Zhairrah G.","section":"1D","custom_id":"mtxMpxVJ","scores":{"midterm":{"dlt_obesity":8.0,"dlt_cellular":10.0,"dlt_anemia":8.0,"dlt_respi":9.0,"jm1":10.0,"jm2":9.0,"jm3":15.0,"jm4":6.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":50.0,"mg_cs":88.51,"major":77.0,"mg_pt":98.13,"mg_avg":92.35,"final_rating":91.64,"action":"Passed"},"finals":{"fjm1":13.0,"fjm2":12.0,"fjm3":11.0,"fjm4":11.0,"fdlt1":20.0,"fdlt2":13.0,"fdlt3":14.0,"lec_jml1":91.0,"lec_jml2":125.0,"lec_jml34":151.0,"lec_dlt1":82.0,"lec_dlt2":81.0,"lec_textbook":82.0,"lt":40.0,"fg_cs":91.05,"major":57.0,"fg_pt":90.71,"fg_avg":90.92}}},{"id":"115218130287","name":"VARGAS, Ken Gabriel V.","section":"1D","custom_id":"YnvE3RuJ","scores":{"midterm":{"dlt_obesity":9.0,"dlt_cellular":10.0,"dlt_anemia":13.0,"dlt_respi":12.0,"jm1":3.0,"jm2":9.0,"jm3":14.0,"jm4":8.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":140.0,"lec_jm2":130.0,"lec_jm3":106.0,"lt":40.0,"mg_cs":84.46,"major":75.0,"mg_pt":96.88,"mg_avg":89.42,"final_rating":90.22,"action":"Passed"},"finals":{"fjm1":14.0,"fjm2":17.0,"fjm3":11.0,"fjm4":14.0,"fdlt1":19.0,"fdlt2":13.0,"fdlt3":12.0,"lec_jml1":91.0,"lec_jml2":118.0,"lec_jml34":118.0,"lec_dlt1":83.0,"lec_dlt2":68.0,"lec_textbook":75.0,"lt":36.0,"fg_cs":88.84,"major":62.0,"fg_pt":94.29,"fg_avg":91.02}}},{"id":"202530249","name":"VASCO, Kawla Fel F.","section":"1D","custom_id":"QxKjBAmE","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":10.0,"dlt_anemia":10.0,"dlt_respi":2.0,"jm1":4.0,"jm2":6.0,"jm3":7.0,"jm4":2.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":42.0,"mg_cs":83.6,"major":65.0,"mg_pt":90.63,"mg_avg":86.41,"final_rating":86.95,"action":"Passed"},"finals":{"fjm1":6.0,"fjm2":7.0,"fjm3":6.0,"fjm4":5.0,"fdlt1":20.0,"fdlt2":11.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":85.0,"lec_dlt2":78.0,"lec_textbook":95.0,"lt":40.0,"fg_cs":89.15,"major":49.0,"fg_pt":85.0,"fg_avg":87.49}}},{"id":"202530223","name":"VELEZ, Tristan Joshua B.","section":"1D","custom_id":"QDcmPUrv","scores":{"midterm":{"dlt_obesity":4.0,"dlt_cellular":8.0,"dlt_anemia":8.0,"dlt_respi":7.0,"jm1":5.0,"jm2":7.0,"jm3":8.0,"jm4":3.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":129.0,"lec_jm2":132.0,"lec_jm3":112.0,"lt":45.0,"mg_cs":83.77,"major":64.0,"mg_pt":90.0,"mg_avg":86.26,"final_rating":85.59,"action":"Passed"},"finals":{"fjm1":11.0,"fjm2":14.0,"fjm3":8.0,"fjm4":8.0,"fdlt1":13.0,"fdlt2":8.0,"fdlt3":7.0,"lec_jml1":91.0,"lec_jml2":132.0,"lec_jml34":131.0,"lec_dlt1":60.0,"lec_dlt2":39.0,"lec_textbook":85.0,"lt":42.0,"fg_cs":86.28,"major":46.0,"fg_pt":82.86,"fg_avg":84.91}}},{"id":"202530648","name":"VEÑEGAS, Jehnny Lynn P.","section":"1D","custom_id":"u3baYFCz","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":6.0,"dlt_anemia":11.0,"dlt_respi":8.0,"jm1":10.0,"jm2":6.0,"jm3":11.0,"jm4":7.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":42.0,"mg_cs":84.37,"major":66.0,"mg_pt":91.25,"mg_avg":87.12,"final_rating":87.39,"action":"Passed"},"finals":{"fjm1":13.0,"fjm2":11.0,"fjm3":11.0,"fjm4":10.0,"fdlt1":19.0,"fdlt2":11.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":81.0,"lec_dlt2":81.0,"lec_textbook":90.0,"lt":41.0,"fg_cs":90.39,"major":47.0,"fg_pt":83.57,"fg_avg":87.66}}},{"id":"202530421","name":"VICTORIANO, Jeynel Joy F.","section":"1D","custom_id":"PXYtC8s4","scores":{"midterm":{"dlt_obesity":5.0,"dlt_cellular":5.0,"dlt_anemia":6.0,"dlt_respi":6.0,"jm1":5.0,"jm2":2.0,"jm3":6.0,"jm4":1.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":135.0,"lec_jm2":127.0,"lec_jm3":127.0,"lt":45.0,"mg_cs":83.21,"major":63.0,"mg_pt":89.38,"mg_avg":85.68,"final_rating":85.03,"action":"Passed"},"finals":{"fjm1":6.0,"fjm2":4.0,"fjm3":4.0,"fjm4":5.0,"fdlt1":17.0,"fdlt2":9.0,"fdlt3":7.0,"lec_jml1":82.0,"lec_jml2":123.0,"lec_jml34":126.0,"lec_dlt1":82.0,"lec_dlt2":79.0,"lec_textbook":94.0,"lt":42.0,"fg_cs":87.29,"major":42.0,"fg_pt":80.0,"fg_avg":84.38}}},{"id":"115069130094","name":"VICTORINO, Kiarra Zarriah M.","section":"1D","custom_id":"AcTyv2qY","scores":{"midterm":{"dlt_obesity":8.0,"dlt_cellular":11.0,"dlt_anemia":11.0,"dlt_respi":11.0,"jm1":13.0,"jm2":14.0,"jm3":14.0,"jm4":6.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":48.0,"mg_cs":89.17,"major":68.0,"mg_pt":92.5,"mg_avg":90.5,"final_rating":89.5,"action":"Passed"},"finals":{"fjm1":14.0,"fjm2":17.0,"fjm3":8.0,"fjm4":13.0,"fdlt1":21.0,"fdlt2":15.0,"fdlt3":14.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":83.0,"lec_dlt2":79.0,"lec_textbook":99.0,"lt":41.0,"fg_cs":93.2,"major":44.0,"fg_pt":81.43,"fg_avg":88.49}}},{"id":"202530170","name":"VILLARIN, Charles Franklin C.","section":"1D","custom_id":"5bmAgEd7","scores":{"midterm":{"dlt_obesity":10.0,"dlt_cellular":10.0,"dlt_anemia":14.0,"dlt_respi":11.0,"jm1":12.0,"jm2":10.0,"jm3":14.0,"jm4":7.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":145.0,"lec_jm2":131.0,"lec_jm3":126.0,"lt":47.0,"mg_cs":88.3,"major":72.0,"mg_pt":95.0,"mg_avg":90.98,"final_rating":91.85,"action":"Passed"},"finals":{"fjm1":17.0,"fjm2":16.0,"fjm3":12.0,"fjm4":14.0,"fdlt1":22.0,"fdlt2":14.0,"fdlt3":11.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":145.0,"lec_dlt1":82.0,"lec_dlt2":79.0,"lec_textbook":93.0,"lt":36.0,"fg_cs":91.2,"major":63.0,"fg_pt":95.0,"fg_avg":92.72}}},{"id":"202530472","name":"VILVAR, Blessy Mae B.","section":"1D","custom_id":"2eVs3rFW","scores":{"midterm":{"dlt_obesity":6.0,"dlt_cellular":8.0,"dlt_anemia":5.0,"dlt_respi":8.0,"jm1":9.0,"jm2":10.0,"jm3":12.0,"jm4":6.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":139.0,"lec_jm2":147.0,"lec_jm3":136.0,"lt":47.0,"mg_cs":85.86,"major":63.0,"mg_pt":89.38,"mg_avg":87.27,"final_rating":86.87,"action":"Passed"},"finals":{"fjm1":15.0,"fjm2":12.0,"fjm3":10.0,"fjm4":15.0,"fdlt1":21.0,"fdlt2":11.0,"fdlt3":9.0,"lec_jml1":91.0,"lec_jml2":125.0,"lec_jml34":136.0,"lec_dlt1":82.0,"lec_dlt2":77.0,"lec_textbook":87.0,"lt":42.0,"fg_cs":90.79,"major":42.0,"fg_pt":80.0,"fg_avg":86.47}}},{"id":"202531297","name":"VIRAYO, Hannah Alyssa A.","section":"1D","custom_id":"r93YqPmf","scores":{"midterm":{"dlt_obesity":5.0,"dlt_cellular":7.0,"dlt_anemia":7.0,"dlt_respi":6.0,"jm1":3.0,"jm2":null,"jm3":2.0,"jm4":5.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":107.0,"lec_jm2":138.0,"lec_jm3":138.0,"lt":41.0,"mg_cs":81.48,"major":63.0,"mg_pt":89.38,"mg_avg":84.64,"final_rating":83.32,"action":"Passed"},"finals":{"fjm1":5.0,"fjm2":3.0,"fjm3":4.0,"fjm4":5.0,"fdlt1":16.0,"fdlt2":4.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":144.0,"lec_dlt1":84.0,"lec_dlt2":75.0,"lec_textbook":87.0,"lt":36.0,"fg_cs":85.69,"major":37.0,"fg_pt":76.43,"fg_avg":81.99}}},{"id":"202530403","name":"WACAY, Jennilyn Marie T.","section":"1D","custom_id":"DFDBpYR6","scores":{"midterm":{"dlt_obesity":7.0,"dlt_cellular":7.0,"dlt_anemia":12.0,"dlt_respi":12.0,"jm1":11.0,"jm2":13.0,"jm3":17.0,"jm4":7.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":44.0,"mg_cs":87.22,"major":72.0,"mg_pt":95.0,"mg_avg":90.33,"final_rating":88.89,"action":"Passed"},"finals":{"fjm1":14.0,"fjm2":16.0,"fjm3":14.0,"fjm4":15.0,"fdlt1":22.0,"fdlt2":14.0,"fdlt3":12.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":85.0,"lec_dlt2":81.0,"lec_textbook":94.0,"lt":41.0,"fg_cs":93.35,"major":40.0,"fg_pt":78.57,"fg_avg":87.44}}},{"id":"202530426","name":"YAP, Keah E.","section":"1D","custom_id":"A9rp57uD","scores":{"midterm":{"dlt_obesity":9.0,"dlt_cellular":10.0,"dlt_anemia":9.0,"dlt_respi":2.0,"jm1":12.0,"jm2":7.0,"jm3":14.0,"jm4":3.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":149.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":43.0,"mg_cs":85.22,"major":71.0,"mg_pt":94.38,"mg_avg":88.88,"final_rating":87.85,"action":"Passed"},"finals":{"fjm1":17.0,"fjm2":12.0,"fjm3":8.0,"fjm4":10.0,"fdlt1":21.0,"fdlt2":13.0,"fdlt3":10.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":82.0,"lec_dlt2":77.0,"lec_textbook":92.0,"lt":37.0,"fg_cs":89.94,"major":45.0,"fg_pt":82.14,"fg_avg":86.82}}},{"id":"115315130018","name":"YARANON, John Casper C.","section":"1D","custom_id":"QkQ8Zka4","scores":{"midterm":{"dlt_obesity":3.0,"dlt_cellular":6.0,"dlt_anemia":11.0,"dlt_respi":7.0,"jm1":6.0,"jm2":6.0,"jm3":5.0,"jm4":4.0,"part_dlt":10.0,"lec_dlt":30.0,"lec_jm1":152.0,"lec_jm2":147.0,"lec_jm3":151.0,"lt":36.0,"mg_cs":81.0,"major":56.0,"mg_pt":85.0,"mg_avg":82.6,"final_rating":83.26,"action":"Passed"},"finals":{"fjm1":9.0,"fjm2":6.0,"fjm3":4.0,"fjm4":9.0,"fdlt1":20.0,"fdlt2":7.0,"fdlt3":9.0,"lec_jml1":91.0,"lec_jml2":137.0,"lec_jml34":151.0,"lec_dlt1":23.0,"lec_dlt2":23.0,"lec_textbook":82.0,"lt":30.0,"fg_cs":81.78,"major":52.0,"fg_pt":87.14,"fg_avg":83.92}}}];
+
+// ── State ──────────────────────────────────────
+function loadState(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const saved=JSON.parse(raw);
+      const merged=JSON.parse(JSON.stringify(INITIAL));
+      merged.forEach(s=>{
+        const sv=saved.students&&saved.students.find(x=>x.id===s.id);
+        if(sv){
+          if(sv.scores){
+            ['midterm','finals'].forEach(p=>{
+              if(sv.scores[p]&&Object.keys(sv.scores[p]).length>0){
+                Object.keys(sv.scores[p]).forEach(k=>{
+                  if(s.scores[p][k]===undefined||s.scores[p][k]===null)
+                    s.scores[p][k]=sv.scores[p][k];
+                });
+              }
+            });
+          }
+        }
+      });
+      return {password:saved.password||DEFAULT_PASS, students:merged};
+    }
+  }catch(e){}
+  return {password:DEFAULT_PASS, students:JSON.parse(JSON.stringify(INITIAL))};
+}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(STATE));}
+let STATE=loadState();
+let tLoggedIn=false;
+let currentPeriod='midterm';
+
+// ── Helpers ────────────────────────────────────
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmt(v,d=2){return v===null||v===undefined||isNaN(v)?'—':Number(v).toFixed(d);}
+
+function toInitials(fullName){
+  if(!fullName) return '—';
+  const parts=fullName.split(',');
+  if(parts.length<2) return fullName;
+  const last=parts[0].trim();
+  const rest=parts[1].trim().split(/\s+/);
+  const lastInit=last.charAt(0).toUpperCase()+'.';
+  const firstInit=rest[0]?rest[0].charAt(0).toUpperCase()+'.':'';
+  let midInit='';
+  if(rest.length>=2){const mid=rest[rest.length-1].replace('.','');if(mid)midInit=mid.charAt(0).toUpperCase()+'.';}
+  return lastInit+firstInit+(midInit||'');
+}
+
+function getCS(sc,period){
+  const key=period==='midterm'?'mg_cs':'fg_cs';
+  if(sc[key]!==undefined&&sc[key]!==null) return sc[key];
+  return null;
+}
+function getPT(sc,period){
+  const key=period==='midterm'?'mg_pt':'fg_pt';
+  if(sc[key]!==undefined&&sc[key]!==null) return sc[key];
+  return null;
+}
+function getAvg(sc,period){
+  const cs=getCS(sc,period), pt=getPT(sc,period);
+  if(cs!==null&&pt!==null) return (cs*0.6)+(pt*0.4);
+  return null;
+}
+function getFinalRating(s){
+  const mAvg = s.scores.midterm.mg_avg || getAvg(s.scores.midterm,'midterm');
+  const fAvg = s.scores.finals.fg_avg  || getAvg(s.scores.finals,'finals');
+  if(mAvg===null && fAvg===null) return null;
+  // Use stored final_rating if available
+  if(s.scores.midterm.final_rating) return s.scores.midterm.final_rating;
+  const parts=[mAvg,fAvg].filter(x=>x!==null);
+  return parts.reduce((a,b)=>a+b,0)/2;
+}
+
+// ── Tab switching ──────────────────────────────
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===(tab==='student'?0:1)));
+  document.getElementById('panel-student').classList.toggle('active',tab==='student');
+  document.getElementById('panel-teacher').classList.toggle('active',tab==='teacher');
+}
+
+// ── Rate limiter ───────────────────────────────
+const MAX_ATT=5, LOCK_MS=5*60*1000;
+let failedAtt=0, lockedUntil=0;
+let tFailedAtt=0, tLockedUntil=0;
+
+function stuLookup(){
+  const now=Date.now();
+  if(now<lockedUntil){
+    const s=Math.ceil((lockedUntil-now)/1000);
+    document.getElementById('stu-err').innerHTML=`<div class="msg msg-err">🔒 Locked. Try again in ${Math.floor(s/60)}m ${s%60}s.</div>`;
+    startLockTimer('stu-err',lockedUntil); return;
+  }
+  const val=document.getElementById('stu-id').value.trim();
+  document.getElementById('stu-err').innerHTML='';
+  document.getElementById('stu-result').innerHTML='';
+  if(!val){document.getElementById('stu-err').innerHTML='<div class="msg msg-err">Please enter your Private Code.</div>';return;}
+  const s=STATE.students.find(x=>x.custom_id===val);
+  if(!s){
+    failedAtt++;
+    const rem=MAX_ATT-failedAtt;
+    if(failedAtt>=MAX_ATT){lockedUntil=Date.now()+LOCK_MS;failedAtt=0;document.getElementById('stu-err').innerHTML='<div class="msg msg-err">🔒 Too many attempts. Locked for 5 minutes.</div>';}
+    else document.getElementById('stu-err').innerHTML=`<div class="msg msg-err">Code not found. ${rem} attempt${rem!==1?'s':''} remaining.</div>`;
+    return;
+  }
+  failedAtt=0;
+  renderStudentResult(s);
+}
+
+function startLockTimer(elId,until){
+  const iv=setInterval(()=>{
+    const rem=Math.ceil((until-Date.now())/1000);
+    if(rem<=0){clearInterval(iv);document.getElementById(elId).innerHTML='<div class="msg msg-ok">✓ You can try again now.</div>';return;}
+    document.getElementById(elId).innerHTML=`<div class="msg msg-err">🔒 Locked. Try again in ${Math.floor(rem/60)}m ${rem%60}s.</div>`;
+  },1000);
+}
+
+let activePeriodTab='midterm';
+
+function renderStudentResult(s){
+  const periods=['midterm','finals'];
+  const pLabels={midterm:'Midterm',finals:'Finals'};
+
+  function hasData(p){const sc=s.scores[p]||{};return getCS(sc,p)!==null||getPT(sc,p)!==null;}
+
+  const finalRating=getFinalRating(s);
+  const allComplete=['midterm','finals'].every(p=>getAvg(s.scores[p]||{},p)!==null);
+  const action=!allComplete?'Pending':finalRating>=80?'Passed':'Failed';
+  const bc=action==='Passed'?'final-passed':action==='Failed'?'final-failed':'';
+
+  let html=`<div class="result-wrap">
+    <div class="result-head">
+      <div class="result-name">${esc(toInitials(s.name))}</div>
+      <div class="result-meta">Pathophysiology · Midyear 2025–2026</div>
+    </div>
+    <div class="result-body">
+      <div class="period-nav">
+        ${periods.map(p=>`<button class="period-nav-btn ${hasData(p)?'has-data':'pending'} ${p===activePeriodTab?'active':''}" onclick="switchPeriodTab('${p}')">${pLabels[p]}</button>`).join('')}
+        <button class="period-nav-btn final-tab ${activePeriodTab==='final'?'active':''}" onclick="switchPeriodTab('final')">🏁 Final Rating</button>
+      </div>
+      ${periods.map(p=>renderPeriodPanel(s,p)).join('')}
+      ${renderFinalPanel(s)}
+    </div>
+  </div>`;
+
+  document.getElementById('stu-result').innerHTML=html;
+  switchPeriodTab(activePeriodTab);
+}
+
+function switchPeriodTab(period){
+  activePeriodTab=period;
+  document.querySelectorAll('.period-nav-btn').forEach(b=>{
+    const txt=b.textContent.trim();
+    const match=(period==='midterm'&&txt==='Midterm')||(period==='finals'&&txt==='Finals')||(period==='final'&&txt.includes('Final Rating'));
+    b.classList.toggle('active',match);
+  });
+  document.querySelectorAll('.period-panel').forEach(p=>p.classList.toggle('active',p.dataset.period===period));
+}
+
+function renderPeriodPanel(s,period){
+  const sc=s.scores[period]||{};
+  const cs=getCS(sc,period), pt=getPT(sc,period), avg=getAvg(sc,period);
+  const comp=COMPONENTS[period];
+  const pLabels={midterm:'Midterm',finals:'Finals'};
+
+  if(cs===null&&pt===null){
+    return `<div class="period-panel" data-period="${period}">
+      <div class="pending-state"><div class="big-icon">📋</div><p>${pLabels[period]} grades not yet available.</p></div>
+    </div>`;
+  }
+
+  let csHtml='';
+  if(comp.cs.groups){
+    comp.cs.groups.forEach(g=>{
+      const items=g.items.map(it=>{
+        const val=sc[it.key];
+        return `<div class="score-item"><div class="score-item-label">${esc(it.label)}</div>
+          <div class="score-item-val">${val!==null&&val!==undefined?val:'—'}<span class="score-item-max">${it.max?'/'+it.max:''}</span></div></div>`;
+      }).join('');
+      csHtml+=`<div style="margin-bottom:10px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">${esc(g.label)} <span style="opacity:.6;">${g.pct}%</span></div>
+        <div class="bk-items">${items}</div></div>`;
+    });
+  }
+
+  const ptHtml=comp.pt.items.map(it=>{
+    const val=sc[it.key];
+    return `<div class="score-item" style="max-width:200px;">
+      <div class="score-item-label">${esc(it.label)}</div>
+      <div class="score-item-val" style="font-size:22px;">${val!==null&&val!==undefined?val:'—'}<span class="score-item-max">${it.max?'/'+it.max:''}</span></div></div>`;
+  }).join('');
+
+  return `<div class="period-panel" data-period="${period}">
+    <div class="breakdown-card bk-cs">
+      <div class="bk-header"><span class="bk-title">Class Standing</span><span class="bk-pct">60%</span></div>
+      <div class="bk-body">${csHtml}
+        <div class="bk-subtotal"><span class="bk-subtotal-label">Class Standing Score</span><span class="bk-subtotal-val">${fmt(cs)}</span></div>
+      </div>
+    </div>
+    <div class="breakdown-card bk-pt">
+      <div class="bk-header"><span class="bk-title">Periodic Test / Major Exam</span><span class="bk-pct">40%</span></div>
+      <div class="bk-body"><div class="bk-items">${ptHtml}</div>
+        <div class="bk-subtotal"><span class="bk-subtotal-label">Periodic Test Score</span><span class="bk-subtotal-val">${fmt(pt)}</span></div>
+      </div>
+    </div>
+    <div class="period-result">
+      <div><div class="period-result-label">${pLabels[period]} Grade</div><div class="period-result-val">${fmt(avg)}</div></div>
+      <div class="period-formula">= (CS × 60%) + (PT × 40%)<br>= ${fmt(cs)} × 0.6 + ${fmt(pt)} × 0.4</div>
+    </div>
+  </div>`;
+}
+
+function renderFinalPanel(s){
+  const periods=['midterm','finals'];
+  const pLabels={midterm:'Midterm',finals:'Finals'};
+  const pColors={midterm:'var(--accent)',finals:'var(--teal)'};
+  const pBg={midterm:'rgba(108,71,212,.08)',finals:'rgba(46,125,155,.08)'};
+  const pBorder={midterm:'rgba(108,71,212,.2)',finals:'rgba(46,125,155,.2)'};
+
+  const avgs=periods.map(p=>s.scores[p].mg_avg||s.scores[p].fg_avg||getAvg(s.scores[p]||{},p));
+  const finalRating=getFinalRating(s);
+  const allComplete=avgs.every(a=>a!==null);
+  const action=!allComplete?null:finalRating>=80?'Passed':'Failed';
+  const bc=action==='Passed'?'final-passed':action==='Failed'?'final-failed':'';
+
+  const periodCards=periods.map((p,i)=>{
+    const avg=avgs[i];
+    return `<div style="background:${avg?pBg[p]:'#f0ecff'};border:1.5px solid ${avg?pBorder[p]:'var(--border)'};border-radius:12px;padding:18px 20px;flex:1;min-width:130px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">${pLabels[p]}</div>
+      ${avg?`<div style="font-family:'DM Mono',monospace;font-size:26px;font-weight:700;color:${pColors[p]};">${fmt(avg)}</div>
+             <div style="font-size:11px;color:var(--text3);margin-top:3px;">(CS×60%)+(PT×40%)</div>`
+          :`<div style="font-size:22px;font-weight:700;color:var(--text3);">—</div>
+             <div style="font-size:11px;color:var(--text3);margin-top:3px;">Not yet available</div>`}
+    </div>`;
+  }).join('');
+
+  return `<div class="period-panel" data-period="final">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">${periodCards}</div>
+    <div style="background:#f0ecff;border:1px solid var(--border);border-radius:11px;padding:14px 18px;margin-bottom:16px;">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">How Final Rating is Computed</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.8;">
+        Final Rating = ( ${avgs.map(a=>`<span style="font-family:'DM Mono',monospace;font-weight:600;">${a?fmt(a):'pending'}</span>`).join(' + ')} ) ÷ 2
+        ${finalRating?`= <span style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text2);">${fmt(finalRating)}</span> ≈ <span style="font-family:'DM Mono',monospace;font-weight:700;color:var(--accent);">${Math.round(finalRating)}</span>`:''} 
+      </div>
+    </div>
+    <div class="final-banner ${bc}" style="${!action?'background:#f0ecff;border:1.5px solid var(--border);':''}">
+      <div>
+        <div class="final-label">Final Rating</div>
+        <div class="final-val" style="${!action?'color:var(--text3);font-size:24px;':''}">${finalRating?Math.round(finalRating):'—'}</div>
+        ${!action?'<div style="font-size:12px;color:var(--text3);margin-top:4px;">⏳ Pending — waiting for all periods</div>':''}
+      </div>
+      ${action?`<div class="final-pill">${action==='Passed'?'✓ Passed':'✗ Failed'}</div>`:
+        `<div style="font-size:12px;font-weight:700;padding:8px 16px;border-radius:24px;background:rgba(176,125,42,.1);color:var(--yellow);">⏳ Pending</div>`}
+    </div>
+  </div>`;
+}
+
+// ── Teacher Auth ───────────────────────────────
+function tLogin(){
+  const now=Date.now();
+  if(now<tLockedUntil){
+    const s=Math.ceil((tLockedUntil-now)/1000);
+    document.getElementById('t-login-err').innerHTML=`<div class="msg msg-err">🔒 Locked. Try again in ${Math.floor(s/60)}m ${s%60}s.</div>`;
+    startLockTimer('t-login-err',tLockedUntil); return;
+  }
+  const p=document.getElementById('t-pass').value;
+  if(p===STATE.password){
+    tFailedAtt=0; tLoggedIn=true;
+    document.getElementById('t-login').style.display='none';
+    document.getElementById('t-content').style.display='block';
+    tShow('upload'); renderIdList(); renderCidTable(); setGradePeriod('midterm');
+  } else {
+    tFailedAtt++;
+    const rem=MAX_ATT-tFailedAtt;
+    if(tFailedAtt>=MAX_ATT){tLockedUntil=Date.now()+LOCK_MS;tFailedAtt=0;document.getElementById('t-login-err').innerHTML='<div class="msg msg-err">🔒 Too many attempts. Locked for 5 minutes.</div>';}
+    else document.getElementById('t-login-err').innerHTML=`<div class="msg msg-err">Incorrect password. ${rem} attempt${rem!==1?'s':''} remaining.</div>`;
+  }
+}
+function tLogout(){
+  tLoggedIn=false;
+  document.getElementById('t-login').style.display='block';
+  document.getElementById('t-content').style.display='none';
+  document.getElementById('t-pass').value='';
+  document.getElementById('t-login-err').innerHTML='';
+}
+function tShow(sec){
+  ['upload','ids','customids','grades','pass-section'].forEach(s=>{
+    const el=document.getElementById('t-'+s);
+    if(el) el.style.display=s===sec?'block':'none';
+  });
+  const g=document.getElementById('t-grades'); if(g) g.style.display=sec==='grades'?'block':'none';
+  const p2=document.getElementById('t-pass-section'); if(p2) p2.style.display=sec==='pass'?'block':'none';
+}
+function changePass(){
+  const np=document.getElementById('new-pass').value.trim();
+  if(!np){document.getElementById('pass-msg').innerHTML='<div class="msg msg-err">Cannot be empty.</div>';return;}
+  STATE.password=np; saveState();
+  document.getElementById('pass-msg').innerHTML='<div class="msg msg-ok">✓ Password updated.</div>';
+  setTimeout(()=>document.getElementById('pass-msg').innerHTML='',3000);
+}
+function downloadUpdatedFile(){
+  const html=document.documentElement.outerHTML;
+  const current=JSON.stringify(STATE.students);
+  const updated=html.replace(/const INITIAL = \[[\s\S]*?\];/,`const INITIAL = ${current};`);
+  const blob=new Blob([updated],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='index.html';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ── Student IDs ────────────────────────────────
+function renderIdList(){
+  const q=(document.getElementById('ids-search').value||'').toLowerCase();
+  const f=STATE.students.filter(s=>s.name.toLowerCase().includes(q)||(s.custom_id||'').toLowerCase().includes(q));
+  document.getElementById('ids-body').innerHTML=f.map((s,i)=>`
+    <tr>
+      <td style="color:var(--text3);font-size:11px;">${i+1}</td>
+      <td style="font-weight:600;">${esc(toInitials(s.name))}</td>
+      <td><span class="sec-${s.section==='1C'?'1c':'1d'}">${s.section==='1C'?'C':'D'}</span></td>
+      <td><span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:${s.custom_id?'var(--green)':'var(--text3)'};">${s.custom_id?esc(s.custom_id):'—'}</span></td>
+    </tr>`).join('');
+}
+
+// ── Lookup Codes ───────────────────────────────
+function showCidTab(tab){
+  ['edit','share'].forEach(t=>{
+    document.getElementById('cidpanel-'+t).style.display=t===tab?'block':'none';
+    const btn=document.getElementById('cidtab-'+t);
+    if(btn) btn.classList.toggle('active',t===tab);
+  });
+  if(tab==='share') renderShareList();
+}
+function renderCidTable(){
+  const q=(document.getElementById('cid-search').value||'').toLowerCase();
+  const f=STATE.students.filter(s=>s.name.toLowerCase().includes(q));
+  document.getElementById('cid-body').innerHTML=f.map((s,i)=>`
+    <tr data-id="${esc(s.id)}">
+      <td style="color:var(--text3);font-size:11px;">${i+1}</td>
+      <td style="font-weight:600;">${esc(toInitials(s.name))}</td>
+      <td><span class="sec-${s.section==='1C'?'1c':'1d'}">${s.section==='1C'?'C':'D'}</span></td>
+      <td><input type="text" value="${esc(s.custom_id||'')}" class="${s.custom_id?'id-set':''}" oninput="this.classList.toggle('id-set',this.value.trim()!=='')" data-field="cid" style="width:130px;"></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="randOne('${esc(s.id)}')">🎲</button></td>
+    </tr>`).join('');
+}
+const CHARS='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+function randCode(){let c='';for(let i=0;i<8;i++)c+=CHARS.charAt(Math.floor(Math.random()*CHARS.length));return c;}
+function genAllRandom(){STATE.students.forEach(s=>{s.custom_id=randCode();});renderCidTable();renderIdList();}
+function randOne(sid){
+  const row=document.querySelector(`#cid-body tr[data-id="${sid}"]`);
+  if(!row) return;
+  const inp=row.querySelector('[data-field="cid"]');
+  const code=randCode(); inp.value=code; inp.classList.add('id-set');
+  const s=STATE.students.find(x=>x.id===sid); if(s) s.custom_id=code;
+}
+function saveCids(){
+  document.querySelectorAll('#cid-body tr').forEach(row=>{
+    const s=STATE.students.find(x=>x.id===row.dataset.id); if(!s) return;
+    const inp=row.querySelector('[data-field="cid"]'); if(inp) s.custom_id=inp.value.trim()||null;
+  });
+  const codes=STATE.students.map(s=>s.custom_id).filter(Boolean);
+  if(new Set(codes).size<codes.length){document.getElementById('cid-msg').innerHTML='<div class="msg msg-err">⚠️ Duplicate codes found!</div>';return;}
+  saveState(); renderIdList(); renderCidTable();
+  document.getElementById('cid-msg').innerHTML='<div class="msg msg-ok">✓ Codes saved!</div>';
+  setTimeout(()=>document.getElementById('cid-msg').innerHTML='',3000);
+}
+function renderShareList(){
+  const sec=document.getElementById('share-section-filter').value||'all';
+  const students=STATE.students.filter(s=>sec==='all'||s.section===sec);
+  document.getElementById('share-list-body').innerHTML=students.map(s=>`
+    <div class="share-row">
+      <div style="font-weight:500;">${esc(toInitials(s.name))}</div>
+      <div>${s.custom_id?`<span class="share-code">${esc(s.custom_id)}</span>`:'<span class="share-no-code">— not set</span>'}</div>
+    </div>`).join('');
+  const lines=students.map(s=>`${toInitials(s.name).padEnd(12)}${s.custom_id||'(not set)'}`);
+  document.getElementById('share-text-area').value=`${'NAME'.padEnd(12)}LOOKUP CODE\n${'─'.repeat(26)}\n`+lines.join('\n');
+}
+function copyTextArea(){
+  document.getElementById('share-text-area').select(); document.execCommand('copy');
+  const el=document.getElementById('copy-confirm'); el.style.display='inline';
+  setTimeout(()=>el.style.display='none',2500);
+}
+function printShareList(){
+  const sec=document.getElementById('share-section-filter').value||'all';
+  const students=STATE.students.filter(s=>sec==='all'||s.section===sec);
+  const rows=students.map((s,i)=>`<tr><td>${i+1}</td><td style="font-family:monospace;font-weight:700;">${toInitials(s.name)}</td><td>${s.section==='1C'?'C':'D'}</td><td style="font-family:monospace;font-weight:700;color:#6c47d4;">${s.custom_id||'—'}</td></tr>`).join('');
+  const win=window.open('','_blank');
+  win.document.write(`<html><head><title>Patho Lookup Codes</title><style>body{font-family:sans-serif;padding:24px;}h2{margin-bottom:18px;}table{width:100%;border-collapse:collapse;font-size:13px;}th{background:#6c47d4;color:#fff;padding:8px 12px;text-align:left;}td{padding:7px 12px;border-bottom:1px solid #e5e7eb;}tr:nth-child(even)td{background:#f8f6ff;}@media print{body{padding:0;}}</style></head><body><h2>Pathophysiology — Student Lookup Codes</h2><table><thead><tr><th>#</th><th>Name</th><th>Group</th><th>Lookup Code</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
+  win.document.close(); win.print();
+}
+function downloadCodesExcel(){
+  const sec=document.getElementById('share-section-filter').value||'all';
+  const students=STATE.students.filter(s=>sec==='all'||s.section===sec);
+  const wsData=[['#','NAME','GROUP','LOOKUP CODE']];
+  students.forEach((s,i)=>wsData.push([i+1,toInitials(s.name),s.section==='1C'?'C':'D',s.custom_id||'']));
+  const ws=XLSX.utils.aoa_to_sheet(wsData);
+  ws['!cols']=[{wch:4},{wch:14},{wch:7},{wch:14}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Lookup Codes');
+  XLSX.writeFile(wb,'PATHO_Lookup_Codes.xlsx');
+}
+
+// ── Grade Table ────────────────────────────────
+function setGradePeriod(p){
+  currentPeriod=p;
+  ['midterm','finals'].forEach(x=>{
+    const b=document.getElementById('gbtn-'+x);
+    if(b) b.className=`btn btn-sm ${x===p?'btn-primary':'btn-ghost'}`;
+  });
+  renderGradeTable();
+}
+function renderGradeTable(){
+  const q=(document.getElementById('grade-search').value||'').toLowerCase();
+  const filterMissing=document.getElementById('filter-missing')?.checked;
+  let f=STATE.students.filter(s=>s.name.toLowerCase().includes(q));
+  if(filterMissing) f=f.filter(s=>{const sc=s.scores[currentPeriod]||{};return getCS(sc,currentPeriod)===null||getPT(sc,currentPeriod)===null;});
+  document.getElementById('rec-count').textContent=`${f.length} / ${STATE.students.length} students`;
+  const p=currentPeriod, comp=COMPONENTS[p];
+  const csKey=p==='midterm'?'mg_cs':'fg_cs', ptKey=p==='midterm'?'mg_pt':'fg_pt';
+  let ths=`<th>Name</th><th>Sec</th>`;
+  comp.cs.groups.forEach(g=>g.items.forEach(it=>{ths+=`<th class="group-cs">${it.label}${it.max?' /'+it.max:''}</th>`;}));
+  ths+=`<th class="group-calc">CS</th>`;
+  comp.pt.items.forEach(it=>{ths+=`<th class="group-pt">${it.label}${it.max?' /'+it.max:''}</th>`;});
+  ths+=`<th class="group-pt">PT Score</th><th class="group-calc">Avg</th>`;
+  const rows=f.map(s=>{
+    const sc=s.scores[p]||{};
+    const cs=getCS(sc,p), pt=getPT(sc,p), avg=getAvg(sc,p);
+    let tds=`<td class="name-cell">${esc(toInitials(s.name))}</td><td><span class="sec-${s.section==='1C'?'1c':'1d'}">${s.section==='1C'?'C':'D'}</span></td>`;
+    comp.cs.groups.forEach(g=>g.items.forEach(it=>{
+      tds+=`<td><input type="number" step="0.01" min="0" value="${sc[it.key]??''}" placeholder="—" onchange="updateScore('${esc(s.id)}','${p}','${it.key}',this.value)"></td>`;
+    }));
+    tds+=`<td class="calc-cell">${fmt(cs)}</td>`;
+    comp.pt.items.forEach(it=>{
+      tds+=`<td><input type="number" step="0.01" min="0" value="${sc[it.key]??''}" placeholder="—" onchange="updateScore('${esc(s.id)}','${p}','${it.key}',this.value)"></td>`;
+    });
+    tds+=`<td><input type="number" step="0.01" min="0" max="100" value="${sc[ptKey]??''}" placeholder="auto" style="background:rgba(46,125,155,.08);" onchange="updateScore('${esc(s.id)}','${p}','${ptKey}',this.value)"></td>`;
+    tds+=`<td class="calc-cell">${fmt(avg)}</td>`;
+    return `<tr data-id="${esc(s.id)}">${tds}</tr>`;
+  }).join('');
+  document.getElementById('grade-tbl-wrap').innerHTML=`<table><thead><tr>${ths}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+function updateScore(sid,period,key,val){
+  const s=STATE.students.find(x=>x.id===sid); if(!s) return;
+  if(!s.scores[period]) s.scores[period]={};
+  s.scores[period][key]=val===''?null:parseFloat(val);
+}
+function saveGrades(){
+  document.querySelectorAll('#grade-tbl-wrap tbody tr').forEach(row=>{
+    const s=STATE.students.find(x=>x.id===row.dataset.id); if(!s) return;
+    if(!s.scores[currentPeriod]) s.scores[currentPeriod]={};
+    row.querySelectorAll('input[type=number]').forEach(inp=>{
+      const oc=inp.getAttribute('onchange')||'';
+      const m=oc.match(/'([^']+)'\)$/);
+      if(m) s.scores[currentPeriod][m[1]]=inp.value===''?null:parseFloat(inp.value);
+    });
+  });
+  saveState(); renderGradeTable();
+  document.getElementById('grade-msg').innerHTML='<div class="msg msg-ok">✓ Grades saved!</div>';
+  setTimeout(()=>document.getElementById('grade-msg').innerHTML='',4000);
+}
+
+// ── Upload ─────────────────────────────────────
+function handleDrop(e){e.preventDefault();document.getElementById('drop-zone').classList.remove('dz-over');handleFiles(e.dataTransfer.files);}
+function handleFiles(files){
+  if(!files||!files.length) return;
+  document.getElementById('upload-log').style.display='block';
+  document.getElementById('upload-log-items').innerHTML='';
+  Array.from(files).forEach(file=>{
+    const ext=file.name.split('.').pop().toLowerCase();
+    if(!['xlsx','xlsm','xls'].includes(ext)){logUpload('err',file.name,'Unsupported file type.',[]);return;}
+    const reader=new FileReader();
+    reader.onload=e=>parseGradesheet(file.name,e.target.result);
+    reader.readAsArrayBuffer(file);
+  });
+}
+function parseGradesheet(filename,arrayBuffer){
+  try{
+    const wb=XLSX.read(arrayBuffer,{type:'array'});
+    let updated=0, notFound=0;
+    const log=[];
+    function nz(v){if(v===null||v===undefined)return null;const f=parseFloat(v);return(isNaN(f)||f===0)?null:Math.round(f*100)/100;}
+    wb.SheetNames.forEach(sheetName=>{
+      const rows=XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{header:1,defval:null});
+      rows.forEach((row,i)=>{
+        if(i<3||!row[1]||!row[2]) return;
+        const sid=String(row[1]).trim();
+        const student=STATE.students.find(s=>s.id===sid);
+        if(!student){notFound++;return;}
+        // Update CS/PT if columns exist
+        if(nz(row[6])||nz(row[7])){
+          student.scores.midterm.mg_cs=nz(row[6]);
+          student.scores.midterm.mg_pt=nz(row[7]);
+          if(nz(row[8])) student.scores.midterm.mg_avg=nz(row[8]);
+        }
+        if(nz(row[9])||nz(row[10])){
+          student.scores.finals.fg_cs=nz(row[9]);
+          student.scores.finals.fg_pt=nz(row[10]);
+          if(nz(row[11])) student.scores.finals.fg_avg=nz(row[11]);
+        }
+        updated++;
+      });
+    });
+    saveState(); renderGradeTable(); renderIdList();
+    logUpload(updated>0?'ok':'warn',filename,`${updated} students updated${notFound>0?` · ${notFound} not matched`:''}`,log);
+  }catch(err){logUpload('err',filename,'Error: '+err.message,[]);}
+}
+function logUpload(type,filename,summary,details){
+  const icons={ok:'✅',err:'❌',warn:'⚠️'};
+  document.getElementById('upload-log-items').insertAdjacentHTML('beforeend',
+    `<div class="upload-item ${type}"><div class="upload-icon">${icons[type]}</div>
+    <div class="upload-detail"><div class="upload-filename">${esc(filename)}</div>
+    <div class="upload-stats">${esc(summary)}</div></div></div>`);
+}
+
+// ── Init ───────────────────────────────────────
+renderIdList(); renderCidTable();
+</script>
+</body>
+</html>
